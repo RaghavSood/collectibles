@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RaghavSood/btcsupply/btclogger"
+	"github.com/RaghavSood/collectibles/clogger"
 	electrumx "github.com/checksum0/go-electrum/electrum"
 )
 
-var log = btclogger.NewLogger("electrum")
+var log = clogger.NewLogger("electrum")
 
 type Electrum struct {
 	client *electrumx.Client
@@ -83,28 +83,40 @@ func (e *Electrum) MonitorHeaders() {
 	}
 }
 
-func (e *Electrum) GetScriptHistory(script string) ([]string, error) {
+func (e *Electrum) GetScriptHistory(script string) ([]string, []int64, error) {
 	electrumHash, err := ScriptToElectrumScript(script)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert script to electrum hash: %w", err)
+		return nil, nil, fmt.Errorf("failed to convert script to electrum hash: %w", err)
 	}
 
 	history, err := e.client.GetHistory(context.TODO(), electrumHash)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get script history: %w", err)
+		return nil, nil, fmt.Errorf("failed to get script history: %w", err)
 	}
 
 	var txids []string
+	var heights []int64
+	seen := make(map[string]bool)
 	for _, entry := range history {
 		log.Debug().
 			Str("txid", entry.Hash).
 			Int32("height", entry.Height).
 			Uint32("fee", entry.Fee).
 			Msg("Found transaction")
-		txids = append(txids, entry.Hash)
+
+		if seen[entry.Hash] {
+			continue
+		}
+
+		if entry.Height > 0 {
+			txids = append(txids, entry.Hash)
+			heights = append(heights, int64(entry.Height))
+		}
+
+		seen[entry.Hash] = true
 	}
 
-	return txids, nil
+	return txids, heights, nil
 }
 
 func (e *Electrum) GetScriptUnspents(script string) ([]string, []int64, error) {

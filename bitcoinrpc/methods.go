@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/RaghavSood/btcsupply/bitcoinrpc/types"
+	"github.com/RaghavSood/collectibles/bitcoinrpc/types"
 )
 
 func (rpc *RpcClient) GetTxOutSetInfo(hashType string, blockHeight int64, useIndex bool) (types.TxOutSetInfo, error) {
