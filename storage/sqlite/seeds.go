@@ -163,3 +163,51 @@ func (d *SqliteBackend) seedItems() error {
 
 	return tx.Commit()
 }
+
+func (d *SqliteBackend) seedAddresses() error {
+	csvFile, err := embeddedMigrations.Open("migrations/seeds/addresses.csv")
+	if err != nil {
+		return fmt.Errorf("failed to open addresses.csv: %w", err)
+	}
+	defer csvFile.Close()
+
+	reader := csv.NewReader(csvFile)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read addresses.csv: %w", err)
+	}
+
+	tx, err := d.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
+
+	_, err = tx.Exec(`CREATE TEMPORARY TABLE addresses_temp (sku TEXT, script TEXT, address TEXT, chain TEXT)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to create temporary table: %w", err)
+	}
+
+	stmt, err := tx.Prepare(`INSERT INTO addresses_temp (sku, script, address, chain) VALUES (?, ?, ?, ?)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+	defer stmt.Close()
+
+	for _, record := range records[1:] {
+		_, err := stmt.Exec(record[0], record[1], record[2], record[3])
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to insert address: %w", err)
+		}
+	}
+
+	_, err = tx.Exec(`INSERT INTO addresses (sku, script, address, chain) SELECT sku, script, address, chain FROM addresses_temp WHERE sku NOT IN (SELECT sku FROM addresses)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to insert addresses: %w", err)
+	}
+
+	return tx.Commit()
+}
