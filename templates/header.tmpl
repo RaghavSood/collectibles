@@ -1,0 +1,62 @@
+{{ define "header" }}
+<!-- Show maintenance banner if site is in read only mode -->
+{{ if .Readonly }}
+<div class="bg-red-500 text-white text-center p-2">
+    <p class="text-sm">Maintenance ongoing. Block data may not be up to date.</p>
+</div>
+{{ end }}
+<header class="bg-white text-black">
+    <nav class="flex items-center justify-between">
+        <div class="pt-4 pb-4 pl-4 flex items-center space-x-3">
+            <a class="text-2xl font-medium" href="/"><span class="text-xl">Collectible</span></a>
+        </div>
+        <div class="pt-4 pb-4 pr-4 flex items-center space-x-3 lg:hidden">
+            <button id="menu-toggle" class="focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="hidden pb-4 pt-4 lg:flex lg:items-center lg:justify-center lg:space-x-4" id="nav-links">
+            <a href="/creators" class="hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">Creators</a>
+            <a href="/series" class="hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">Series</a>
+        </div>
+        <div class="hidden pb-4 pt-4 pr-4 lg:flex lg:items-center lg:justify-center lg:space-x-4" id="nav-links">
+            <a href="/about" class="hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">About</a>
+        </div>
+    </nav>
+    <div class="hidden flex-col space-y-2 p-4 lg:hidden" id="mobile-menu">
+        <a href="/creators" class="hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">Creators</a>
+        <a href="/series" class="hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">Series</a>
+        <a href="/about" class="block hover:underline hover:text-orange-400 hover:decoration-dotted nav-link">About</a>
+    </div>
+</header>
+
+<!-- Search Box -->
+<div class="w-full lg:container mx-auto p-4">
+  <form class="mx-auto" action="/search" method="GET">
+      <label for="default-search" class="mb-2 text-sm font-medium  sr-only">Search</label>
+      <div class="relative">
+          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+          </div>
+          <input type="search" name="q" id="default-search" class="block w-full p-4 ps-10 text-sm border border-orange-700 rounded-lg bg-white/80 focus:outline-none focus:border-orange-600" placeholder="Creator, address, or firstbits" required />
+          <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-orange-500 hover:bg-orange-600 focus:outline-none font-medium rounded-lg text-sm px-4 py-2">Search</button>
+      </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', function () {
+        mobileMenu.classList.toggle('hidden');
+    });
+});
+</script>
+{{ end }}
+

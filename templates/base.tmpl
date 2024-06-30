@@ -33,15 +33,9 @@
     }
   </script>
 </head>
-{{ $bgcolor := "bg-black" }}
-{{ if .Price }}
-  {{ $bgcolor = "bg-red-800" }}
-  {{ if ge .Price 1000000.0 }}
-      {{ $bgcolor = "bg-green-800" }}
-  {{ end }}
-{{ end }}
-<body class="{{ $bgcolor }} text-slate-400 flex flex-col items-center justify-center h-screen min-h-screen font-mono">
-  <main class="flex flex-col items-center justify-center flex-grow">
+<body class="bg-orange-400 flex flex-col min-h-screen font-mono">
+  {{ template "header" . }}
+  <main>
     {{ block "content" . }}{{ end }}
   </main>
   {{ template "footer" . }}

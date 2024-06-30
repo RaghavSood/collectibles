@@ -16,7 +16,7 @@ type Template struct {
 func New() *Template {
 	funcMap := template.FuncMap{}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl"))
 	return &Template{
 		templates: templates,
 	}
