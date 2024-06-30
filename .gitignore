@@ -1,3 +1,5 @@
 .devenv
 tmp
 *.sw*
+
+static/css/tailwind.css

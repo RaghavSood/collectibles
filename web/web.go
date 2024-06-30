@@ -1,0 +1,57 @@
+package web
+
+import (
+	"net/http"
+	"os"
+
+	"github.com/RaghavSood/collectibles/static"
+	"github.com/RaghavSood/collectibles/templates"
+	"github.com/gin-gonic/gin"
+)
+
+type Server struct{}
+
+func NewServer() *Server {
+	return &Server{}
+}
+
+func (s *Server) Serve() {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.Default()
+
+	router.GET("/", s.index)
+
+	router.GET("/ogimage/:slug", s.ogimage)
+
+	router.StaticFS("/static", http.FS(static.Static))
+	// Serve /favicon.ico and /robots.txt from the root
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		c.FileFromFS("favicon.ico", http.FS(static.Static))
+	})
+
+	router.GET("/robots.txt", func(c *gin.Context) {
+		c.FileFromFS("robots.txt", http.FS(static.Static))
+	})
+
+	port := os.Getenv("COLLECTIBLES_PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	router.Run(":" + port)
+}
+
+func (s *Server) index(c *gin.Context) {
+	s.renderTemplate(c, "index.tmpl", map[string]interface{}{
+		"Title": "Home",
+	})
+}
+
+func (s *Server) renderTemplate(c *gin.Context, template string, params map[string]interface{}) {
+	tmpl := templates.New()
+	err := tmpl.Render(c.Writer, template, params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
