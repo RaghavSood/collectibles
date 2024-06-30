@@ -4,6 +4,7 @@ go 1.22.3
 
 require (
 	github.com/RaghavSood/ogimage v0.0.0-20240626141952-ce97471f4955
+	github.com/bits-and-blooms/bloom/v3 v3.7.0
 	github.com/checksum0/go-electrum v0.0.0-20220912200153-b862ac442cf9
 	github.com/gin-gonic/gin v1.10.0
 	github.com/mattn/go-sqlite3 v1.14.22
@@ -12,6 +13,7 @@ require (
 )
 
 require (
+	github.com/bits-and-blooms/bitset v1.10.0 // indirect
 	github.com/btcsuite/btcd v0.23.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.1.3 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.1 // indirect
