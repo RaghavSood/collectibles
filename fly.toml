@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for isbtc1m on 2024-06-26T18:05:19+08:00
+# fly.toml app configuration file generated for collectibles on 2024-06-30T10:15:01+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -7,9 +7,12 @@ app = 'collectibles'
 primary_region = 'sin'
 
 [build]
+  [build.args]
+    GO_VERSION = '1.22.3'
 
 [env]
   COLLECTIBLES_PORT = '8080'
+  PORT = '8080'
 
 [http_service]
   internal_port = 8080
@@ -22,3 +25,10 @@ primary_region = 'sin'
   memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
+
+[mounts]
+  source = "collectibles_data"
+  destination = "/data"
+  auto_extend_size_increment = "5GB"
+  auto_extend_size_limit = "500GB"
+  auto_extend_size_threshold = 80

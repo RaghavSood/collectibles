@@ -47,12 +47,12 @@
           in
           {
             default = pkgs.buildGoModule {
-              name = "isbtc1m";
+              name = "collectibles";
 
               src = ./.;
-              vendorHash = "";
+              vendorHash = "sha256-gzwXT6P/Qy4KHsnfFulS4Bab9oglS2/fA2ijRaRLJi4=";
 
-              subPackages = [ "cmd/isbtc1m" ];
+              subPackages = [ "cmd/collectibles" ];
 
               preBuild = ''
                 substituteInPlace main.go --replace-fail tailwindcss ${pkgs.tailwindcss}/bin/tailwindcss
