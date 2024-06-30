@@ -61,6 +61,11 @@ func NewSqliteBackend(readonly bool) (*SqliteBackend, error) {
 		if err := backend.Migrate(); err != nil {
 			return nil, fmt.Errorf("failed to migrate database: %w", err)
 		}
+
+		err = backend.seedCreators()
+		if err != nil {
+			return nil, fmt.Errorf("failed to seed creators: %w", err)
+		}
 	}
 
 	return backend, nil
