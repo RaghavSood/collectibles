@@ -28,6 +28,7 @@
                   packages = with pkgs; [
                     air
                     flyctl
+                    goose
                     tailwindcss
                   ];
 
