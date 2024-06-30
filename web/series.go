@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) series(c *gin.Context) {
-	series, err := s.db.GetSeries()
+	series, err := s.db.SeriesSummaries()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

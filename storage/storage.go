@@ -22,4 +22,6 @@ type Storage interface {
 	RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error
 
 	CreatorSummaries() ([]types.CreatorSummary, error)
+
+	SeriesSummaries() ([]types.SeriesSummary, error)
 }
