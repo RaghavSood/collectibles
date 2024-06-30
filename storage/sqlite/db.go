@@ -71,6 +71,11 @@ func NewSqliteBackend(readonly bool) (*SqliteBackend, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to seed series: %w", err)
 		}
+
+		err = backend.seedItems()
+		if err != nil {
+			return nil, fmt.Errorf("failed to seed items: %w", err)
+		}
 	}
 
 	return backend, nil
