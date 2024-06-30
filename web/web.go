@@ -5,14 +5,21 @@ import (
 	"os"
 
 	"github.com/RaghavSood/collectibles/static"
+	"github.com/RaghavSood/collectibles/storage"
 	"github.com/RaghavSood/collectibles/templates"
 	"github.com/gin-gonic/gin"
 )
 
-type Server struct{}
+type Server struct {
+	db       storage.Storage
+	readOnly bool
+}
 
-func NewServer() *Server {
-	return &Server{}
+func NewServer(db storage.Storage, noindex bool) *Server {
+	return &Server{
+		db:       db,
+		readOnly: noindex,
+	}
 }
 
 func (s *Server) Serve() {
