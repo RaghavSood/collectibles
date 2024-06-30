@@ -7,7 +7,7 @@ import (
 )
 
 func (d *SqliteBackend) GetCreators() ([]types.Creator, error) {
-	rows, err := d.db.Query("SELECT id, name, created_at FROM creators")
+	rows, err := d.db.Query("SELECT name, created_at, slug FROM creators")
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func scanCreators(rows *sql.Rows) ([]types.Creator, error) {
 	var creators []types.Creator
 	for rows.Next() {
 		var creator types.Creator
-		err := rows.Scan(&creator.ID, &creator.Name, &creator.CreatedAt)
+		err := rows.Scan(&creator.Name, &creator.CreatedAt, &creator.Slug)
 		if err != nil {
 			return nil, err
 		}
