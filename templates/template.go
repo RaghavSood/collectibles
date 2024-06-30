@@ -4,6 +4,8 @@ import (
 	"embed"
 	"html/template"
 	"io"
+
+	"github.com/RaghavSood/collectibles/util"
 )
 
 //go:embed *
@@ -14,7 +16,9 @@ type Template struct {
 }
 
 func New() *Template {
-	funcMap := template.FuncMap{}
+	funcMap := template.FuncMap{
+		"BTCValueToUSD": util.BTCValueToUSD,
+	}
 
 	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl"))
 	return &Template{
