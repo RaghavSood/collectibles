@@ -22,7 +22,7 @@ func (d *SqliteBackend) GetScriptQueue() ([]types.ScriptQueue, error) {
 }
 
 func (d *SqliteBackend) GetTransactionQueue() ([]types.TransactionQueue, error) {
-	rows, err := d.db.Query(`SELECT txid, chain, block_height, try_count, created_at FROM transaction_queue`)
+	rows, err := d.db.Query(`SELECT txid, chain, block_height, try_count, created_at FROM transaction_queue ORDER BY block_height ASC`)
 	if err != nil {
 		return nil, err
 	}
