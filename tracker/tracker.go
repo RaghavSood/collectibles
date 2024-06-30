@@ -148,6 +148,12 @@ func (t *Tracker) processScriptQueue() {
 			continue
 		}
 
+		if len(unspentTxids) == 0 {
+			log.Info().Str("script", script.Script).Msg("No on-chain activity found for script")
+			err = t.db.MarkScriptFastIndex(script.Script, script.Chain, 1)
+			continue
+		}
+
 		err = t.db.RecordScriptUnspents(script, unspentTxids, unspentHeights)
 		if err != nil {
 			log.Error().Err(err).Str("script", script.Script).Msg("Failed to record unspents")
