@@ -24,9 +24,9 @@ WORKDIR /app
 RUN mkdir -p /app/bin /etc
 
 # Copy /nix/store
-COPY --from=builder /tmp/nix-store-closure /nix/store
-COPY --from=builder /src/result /app
 COPY --from=builder /tmp/litestream/litestream /app/bin/litestream
 COPY --from=builder /src/deployment/bin/run.sh /app/bin/run.sh
 COPY --from=builder /src/deployment/etc/litestream.yml /etc/litestream.yml
+COPY --from=builder /tmp/nix-store-closure /nix/store
+COPY --from=builder /src/result /app
 CMD [ "/app/bin/run.sh" ]
