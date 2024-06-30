@@ -21,6 +21,16 @@ func (d *SqliteBackend) GetScriptQueue() ([]types.ScriptQueue, error) {
 	return scanScriptQueue(rows)
 }
 
+func (d *SqliteBackend) GetTransactionQueue() ([]types.TransactionQueue, error) {
+	rows, err := d.db.Query(`SELECT txid, chain, block_height, try_count, created_at FROM transaction_queue`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanTransactionQueue(rows)
+}
+
 func (d *SqliteBackend) IncrementScriptQueueTryCount(script, chain string) error {
 	_, err := d.db.Exec(`UPDATE script_queue SET try_count = try_count + 1 WHERE script = ? AND chain = ?`, script, chain)
 	return err
@@ -73,4 +83,17 @@ func scanScriptQueue(rows *sql.Rows) ([]types.ScriptQueue, error) {
 		scripts = append(scripts, script)
 	}
 	return scripts, nil
+}
+
+func scanTransactionQueue(rows *sql.Rows) ([]types.TransactionQueue, error) {
+	var transactions []types.TransactionQueue
+	for rows.Next() {
+		var tx types.TransactionQueue
+		err := rows.Scan(&tx.Txid, &tx.Chain, &tx.BlockHeight, &tx.TryCount, &tx.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, tx)
+	}
+	return transactions, nil
 }

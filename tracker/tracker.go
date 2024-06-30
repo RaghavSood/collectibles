@@ -6,9 +6,12 @@ import (
 	"time"
 
 	"github.com/RaghavSood/collectibles/bitcoinrpc"
+	btypes "github.com/RaghavSood/collectibles/bitcoinrpc/types"
+	"github.com/RaghavSood/collectibles/bloomfilter"
 	"github.com/RaghavSood/collectibles/clogger"
 	"github.com/RaghavSood/collectibles/electrum"
 	"github.com/RaghavSood/collectibles/storage"
+	"github.com/RaghavSood/collectibles/types"
 )
 
 var log = clogger.NewLogger("tracker")
@@ -16,6 +19,7 @@ var log = clogger.NewLogger("tracker")
 type Tracker struct {
 	db      storage.Storage
 	client  *bitcoinrpc.RpcClient
+	bf      *bloomfilter.BloomFilter
 	eclient *electrum.Electrum
 }
 
@@ -28,12 +32,27 @@ func NewTracker(db storage.Storage) *Tracker {
 	return &Tracker{
 		db:      db,
 		client:  bitcoinrpc.NewRpcClient(os.Getenv("BITCOIND_HOST"), os.Getenv("BITCOIND_USER"), os.Getenv("BITCOIND_PASS")),
+		bf:      bloomfilter.NewBloomFilter(),
 		eclient: eclient,
 	}
 }
 
 func (t *Tracker) Run() {
 	log.Info().Msg("Starting tracker")
+
+	log.Info().Msg("Loading scripts from database")
+	scripts, err := t.db.GetOnlyScripts("bitcoin")
+	if err == sql.ErrNoRows {
+		log.Info().Msg("No scripts found in database")
+		err = nil
+	}
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to load scripts")
+	} else {
+		log.Info().Int("count", len(scripts)).Msg("Loading scripts into bloom filter")
+		t.bf.AddStrings(scripts)
+		log.Info().Int("count", len(scripts)).Msg("Scripts loaded")
+	}
 
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
@@ -54,6 +73,47 @@ func (t *Tracker) Run() {
 			}
 
 			t.processScriptQueue()
+			t.processTransactionQueue()
+		}
+	}
+}
+
+func (t *Tracker) processTransactionQueue() {
+	log.Info().Msg("Processing transaction queue")
+
+	txs, err := t.db.GetTransactionQueue()
+	if err == sql.ErrNoRows {
+		log.Info().Msg("No transactions in queue")
+		return
+	}
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get transactions from queue")
+		return
+	}
+
+	for _, tx := range txs {
+		log.Info().Str("txid", tx.Txid).Msg("Processing transaction")
+		txDetails, err := t.client.GetTransaction(tx.Txid)
+		if err != nil {
+			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to get transaction details")
+			continue
+		}
+
+		if txDetails.Blockhash == "" {
+			log.Info().Str("txid", tx.Txid).Msg("Transaction not yet confirmed")
+			continue
+		}
+
+		block, err := t.client.GetBlock(txDetails.Blockhash)
+		if err != nil {
+			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to get block details")
+			continue
+		}
+
+		outpoints, spentTxids, spentVouts, spendingTxids, spendingVins := t.scanTransactions(block.Height, block.Time, []btypes.TransactionDetail{txDetails}, "bitcoin")
+		err = t.db.RecordTransactionEffects(outpoints, spentTxids, spentVouts, spendingTxids, spendingVins, block.Height, block.Time)
+		if err != nil {
+			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to record transaction effects")
 		}
 	}
 }
@@ -97,4 +157,61 @@ func (t *Tracker) processScriptQueue() {
 			}
 		}
 	}
+}
+
+func (t *Tracker) scanTransactions(blockHeight int64, blockTime int, txs []btypes.TransactionDetail, chain string) ([]types.Outpoint, []string, []int, []string, []int) {
+	var outpoints []types.Outpoint
+	var spentTxids []string
+	var spentVouts []int
+	var spendingTxids []string
+	var spendingVins []int
+
+	for _, tx := range txs {
+		for i, vin := range tx.Vin {
+			if vin.Coinbase != "" {
+				continue
+			}
+
+			spentScript := vin.Prevout.ScriptPubKey.Hex
+
+			if t.bf.TestString(spentScript) {
+				exists, err := t.db.ScriptExists(spentScript, chain)
+				if err != nil {
+					log.Error().Err(err).Str("script", spentScript).Msg("Failed to check if script exists")
+					continue
+				}
+
+				log.Info().
+					Str("script", spentScript).
+					Bool("exists", exists).
+					Str("txid", vin.Txid).
+					Int("vout", vin.Vout).
+					Msg("Checking if script exists")
+
+				if exists {
+					spentTxids = append(spentTxids, vin.Txid)
+					spentVouts = append(spentVouts, vin.Vout)
+					spendingTxids = append(spendingTxids, tx.Txid)
+					spendingVins = append(spendingVins, i)
+				}
+			}
+		}
+
+		for _, vout := range tx.Vout {
+			script := vout.ScriptPubKey.Hex
+			if t.bf.TestString(script) {
+				outpoints = append(outpoints, types.Outpoint{
+					Txid:        tx.Txid,
+					Vout:        vout.N,
+					Script:      script,
+					Value:       types.FromBTCString(types.BTCString(vout.Value)),
+					BlockHeight: blockHeight,
+					BlockTime:   time.Unix(int64(blockTime), 0),
+					Chain:       chain,
+				})
+			}
+		}
+	}
+
+	return outpoints, spentTxids, spentVouts, spendingTxids, spendingVins
 }

@@ -10,8 +10,14 @@ type Storage interface {
 
 	GetItems() ([]types.Item, error)
 
+	GetOnlyScripts(chain string) ([]string, error)
+	ScriptExists(script, chain string) (bool, error)
+
 	QueueNewScripts(height int64) error
 	GetScriptQueue() ([]types.ScriptQueue, error)
+	GetTransactionQueue() ([]types.TransactionQueue, error)
 	IncrementScriptQueueTryCount(script, chain string) error
 	RecordScriptUnspents(script types.ScriptQueue, unspentTxids []string, unspentHeights []int64) error
+
+	RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error
 }
