@@ -16,6 +16,18 @@ func (d *SqliteBackend) GetCreators() ([]types.Creator, error) {
 	return scanCreators(rows)
 }
 
+func (d *SqliteBackend) GetCreator(slug string) (*types.Creator, error) {
+	row := d.db.QueryRow("SELECT name, created_at, slug FROM creators WHERE slug = ?", slug)
+
+	var creator types.Creator
+	err := row.Scan(&creator.Name, &creator.CreatedAt, &creator.Slug)
+	if err != nil {
+		return nil, err
+	}
+
+	return &creator, nil
+}
+
 func scanCreators(rows *sql.Rows) ([]types.Creator, error) {
 	var creators []types.Creator
 	for rows.Next() {
