@@ -13,6 +13,9 @@ RUN nix \
 RUN mkdir -p /tmp/nix-store-closure /tmp/litestream
 RUN cp -R $(nix-store -qR result/) /tmp/nix-store-closure
 
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /tmp/litestream -xzf /tmp/litestream.tar.gz
+
 FROM alpine:3 as alpine
 
 RUN apk add -U --no-cache ca-certificates
@@ -22,4 +25,7 @@ WORKDIR /app
 # Copy /nix/store
 COPY --from=builder /tmp/nix-store-closure /nix/store
 COPY --from=builder /src/result /app
-CMD [ "/app/bin/collectibles" ]
+COPY --from=builder /tmp/litestream/litestream /app/bin/litestream
+COPY --from=builder /src/deployment/bin/run.sh /app/bin/run.sh
+COPY --from=builder /src/deployment/etc/litestream.yml /etc/litestream.yml
+CMD [ "/app/bin/run.sh" ]
