@@ -20,4 +20,6 @@ type Storage interface {
 	RecordScriptUnspents(script types.ScriptQueue, unspentTxids []string, unspentHeights []int64) error
 
 	RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error
+
+	CreatorSummaries() ([]types.CreatorSummary, error)
 }
