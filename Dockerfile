@@ -1,14 +1,25 @@
-ARG GO_VERSION=1
-FROM golang:${GO_VERSION}-bookworm as builder
+# Use the NixOS base image
+FROM nixos/nix as builder
 
-WORKDIR /usr/src/app
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
-COPY . .
-RUN go build -v -o /run-app .
+# Set up the Nix environment
+COPY . /src
+WORKDIR /src
 
+RUN nix \
+    --extra-experimental-features "nix-command flakes" \
+    --option filter-syscalls false \
+    build
 
-FROM debian:bookworm
+RUN mkdir -p /tmp/nix-store-closure /tmp/litestream
+RUN cp -R $(nix-store -qR result/) /tmp/nix-store-closure
 
-COPY --from=builder /run-app /usr/local/bin/
-CMD ["run-app"]
+FROM alpine:3 as alpine
+
+RUN apk add -U --no-cache ca-certificates
+
+WORKDIR /app
+
+# Copy /nix/store
+COPY --from=builder /tmp/nix-store-closure /nix/store
+COPY --from=builder /src/result /app
+CMD [ "/app/bin/collectibles" ]
