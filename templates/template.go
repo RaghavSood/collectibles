@@ -18,6 +18,7 @@ type Template struct {
 func New() *Template {
 	funcMap := template.FuncMap{
 		"BTCValueToUSD": util.BTCValueToUSD,
+		"FormatNumber":  util.FormatNumber,
 	}
 
 	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl"))

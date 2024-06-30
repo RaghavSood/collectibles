@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) creators(c *gin.Context) {
-	creators, err := s.db.GetCreators()
+	creators, err := s.db.CreatorSummaries()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
