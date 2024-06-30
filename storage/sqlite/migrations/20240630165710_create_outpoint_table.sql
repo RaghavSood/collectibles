@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE outpoint (
+CREATE TABLE outpoints (
   txid TEXT NOT NULL,
   vout INTEGER NOT NULL,
   script TEXT NOT NULL,
@@ -18,5 +18,5 @@ CREATE TABLE outpoint (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE outpoint;
+DROP TABLE outpoints;
 -- +goose StatementEnd
