@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) items(c *gin.Context) {
-	items, err := s.db.GetItems()
+	items, err := s.db.ItemSummaries()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

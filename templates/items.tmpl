@@ -6,6 +6,24 @@
         <a href="/item/{{ .SKU }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
           <h2 class="text-xl font-semibold">{{ .SKU }}</h2>
         </a>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .TotalValue.SatoshisToBTC true }} BTC</p>
+            <h3 class="text-xs mb-4">TVL BTC</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .TotalValue)) }}</p>
+            <h3 class="text-xs mb-4">TVL USD</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .TotalReceived.SatoshisToBTC true }} BTC</p>
+            <h3 class="text-xs mb-4">Deposits</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .TotalSpent.SatoshisToBTC true }} BTC</p>
+            <h3 class="text-xs mb-4">Withdrawals</h3>
+          </div>
+        </div>
       </div>
     {{ end }}
   </div>
