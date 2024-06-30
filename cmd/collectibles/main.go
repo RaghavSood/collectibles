@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/RaghavSood/collectibles/storage/sqlite"
+	"github.com/RaghavSood/collectibles/tracker"
 	"github.com/RaghavSood/collectibles/web"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -25,6 +26,13 @@ func main() {
 	defer db.Close()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to open database")
+	}
+
+	if !noindex {
+		tracker := tracker.NewTracker(db)
+		go tracker.Run()
+	} else {
+		log.Info().Msg("Running in read-only mode, not indexing the blockchain")
 	}
 
 	webServer := web.NewServer(db, noindex)
