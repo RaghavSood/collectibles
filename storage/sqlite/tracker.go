@@ -32,5 +32,13 @@ func (d *SqliteBackend) RecordTransactionEffects(outpoints []types.Outpoint, spe
 		}
 	}
 
+	for _, txid := range spendingTxids {
+		_, err := tx.Exec(`DELETE FROM transaction_queue WHERE txid = ?`, txid)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
 	return tx.Commit()
 }
