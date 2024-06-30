@@ -7,3 +7,5 @@ static/css/tailwind.css
 .env
 
 *.sqlite*
+
+result
