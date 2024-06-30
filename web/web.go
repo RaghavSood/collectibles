@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/RaghavSood/collectibles/clogger"
+	"github.com/RaghavSood/collectibles/middleware"
 	"github.com/RaghavSood/collectibles/static"
 	"github.com/RaghavSood/collectibles/storage"
 	"github.com/RaghavSood/collectibles/templates"
@@ -24,7 +26,9 @@ func NewServer(db storage.Storage, noindex bool) *Server {
 
 func (s *Server) Serve() {
 	gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
+	router := gin.New()
+	router.Use(middleware.StructuredLogger(clogger.NewLogger("gin-webui")))
+	router.Use(gin.Recovery())
 
 	router.GET("/", s.index)
 
