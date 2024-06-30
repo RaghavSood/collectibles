@@ -13,4 +13,5 @@ type Outpoint struct {
 	SpendingVin         int       `json:"spending_vin"`
 	SpendingBlockHeight int64     `json:"spending_block_height"`
 	SpendingBlockTime   time.Time `json:"spending_block_time"`
+	Chain               string    `json:"chain"`
 }
