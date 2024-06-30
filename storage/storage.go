@@ -7,4 +7,6 @@ type Storage interface {
 	GetCreator(slug string) (*types.Creator, error)
 
 	GetSeries() ([]types.Series, error)
+
+	GetItems() ([]types.Item, error)
 }

@@ -37,6 +37,8 @@ func (s *Server) Serve() {
 
 	router.GET("/series", s.series)
 
+	router.GET("/items", s.items)
+
 	router.GET("/ogimage/:slug", s.ogimage)
 
 	router.StaticFS("/static", http.FS(static.Static))
