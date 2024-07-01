@@ -27,8 +27,15 @@ func (s *Server) item(c *gin.Context) {
 		return
 	}
 
+	itemTransactions, err := s.db.TransactionSummariesByItem(sku)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	s.renderTemplate(c, "item.tmpl", map[string]interface{}{
-		"Title": "Item",
-		"Item":  item,
+		"Title":        "Item",
+		"Item":         item,
+		"Transactions": itemTransactions,
 	})
 }
