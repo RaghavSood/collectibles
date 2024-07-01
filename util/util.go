@@ -1,11 +1,16 @@
 package util
 
 import (
+	"html/template"
 	"strings"
 
 	"github.com/RaghavSood/collectibles/prices"
 	"github.com/RaghavSood/collectibles/types"
 )
+
+func NoEscapeHTML(str string) template.HTML {
+	return template.HTML(str)
+}
 
 func BTCValueToUSD(satsValue *types.BigInt) float64 {
 	price, err := prices.GetBTCUSDPrice()

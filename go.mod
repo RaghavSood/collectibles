@@ -7,6 +7,7 @@ require (
 	github.com/bits-and-blooms/bloom/v3 v3.7.0
 	github.com/checksum0/go-electrum v0.0.0-20220912200153-b862ac442cf9
 	github.com/gin-gonic/gin v1.10.0
+	github.com/gomarkdown/markdown v0.0.0-20240626202925-2eda941fd024
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose/v3 v3.21.1
 	github.com/rs/zerolog v1.33.0

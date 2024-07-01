@@ -17,6 +17,7 @@ type Template struct {
 
 func New() *Template {
 	funcMap := template.FuncMap{
+		"NoEscape":      util.NoEscapeHTML,
 		"BTCValueToUSD": util.BTCValueToUSD,
 		"FormatNumber":  util.FormatNumber,
 	}
