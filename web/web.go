@@ -31,6 +31,7 @@ func (s *Server) Serve() {
 	router.Use(gin.Recovery())
 
 	router.GET("/", s.index)
+	router.GET("/about", s.about)
 
 	router.GET("/creators", s.creators)
 	router.GET("/creator/:slug", s.creator)
@@ -62,6 +63,12 @@ func (s *Server) Serve() {
 func (s *Server) index(c *gin.Context) {
 	s.renderTemplate(c, "index.tmpl", map[string]interface{}{
 		"Title": "Home",
+	})
+}
+
+func (s *Server) about(c *gin.Context) {
+	s.renderTemplate(c, "about.tmpl", map[string]interface{}{
+		"Title": "About",
 	})
 }
 
