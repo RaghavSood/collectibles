@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 
+	"github.com/RaghavSood/collectibles/notes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,9 +34,17 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		return
 	}
 
+	notePointer := notes.NotePointer{
+		NoteType:     notes.Series,
+		PathElements: []string{series.Slug},
+	}
+
+	notes := notes.ReadNotes([]notes.NotePointer{notePointer})
+
 	s.renderTemplate(c, "series_detail.tmpl", map[string]interface{}{
 		"Title":  series.Name,
 		"Series": series,
 		"Items":  items,
+		"Notes":  notes,
 	})
 }
