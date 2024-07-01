@@ -54,6 +54,11 @@ func (s *Server) Serve() {
 		c.FileFromFS("robots.txt", http.FS(static.Static))
 	})
 
+	sitemap := router.Group("/sitemap")
+	{
+		sitemap.GET("/creators.xml", s.sitemapCreators)
+	}
+
 	port := os.Getenv("COLLECTIBLES_PORT")
 	if port == "" {
 		port = "8080"
