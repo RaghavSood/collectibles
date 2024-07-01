@@ -1,0 +1,1 @@
+The 2016 BTCC 1 BTC V-Series coin was minted as a 43mm Titanium coin. A total of 1,375 coins were produced - 1,350 standard 1 BTC coins, and 25 error coins that were accidentally funded twice in blocks 413851 and 413852.
