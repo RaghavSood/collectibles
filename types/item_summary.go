@@ -14,3 +14,11 @@ type ItemSummary struct {
 	Unredeemed    int     `json:"unredeemed"`
 	Redeemed      int     `json:"redeemed"`
 }
+
+func (is *ItemSummary) SerialString() string {
+	if is.Serial == "" {
+		return "No Serial"
+	}
+
+	return is.Serial
+}

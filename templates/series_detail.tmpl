@@ -18,11 +18,7 @@
           {{ range .Items }}
             <tr>
               <td class="px-4 py-2 border-b border-orange-700">
-                {{ if .Serial }}
-                  {{ .Serial }}
-                {{ else }}
-                  <span class="text-slate-700">No serial</span>
-                {{ end }}
+                {{ .SerialString }}
               </td>
               <td class="px-4 py-2 border-b border-orange-700">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
               <td class="px-4 py-2 border-b border-orange-700">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .TotalValue)) }}</td>
