@@ -25,7 +25,7 @@
             <th class="text-start px-4 py-2 border-b border-orange-700">Value (USD)</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="text-sm">
           {{ range .Transactions }}
             {{ $rowColor := "text-green-700" }}
             {{ if eq .TransactionType "outgoing" }}
