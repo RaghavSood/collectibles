@@ -27,8 +27,15 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		return
 	}
 
+	items, err := s.db.ItemSummariesBySeries(slug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	s.renderTemplate(c, "series_detail.tmpl", map[string]interface{}{
 		"Title":  series.Name,
 		"Series": series,
+		"Items":  items,
 	})
 }
