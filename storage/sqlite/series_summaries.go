@@ -41,6 +41,19 @@ WHERE
 	return scanSeriesSummaries(rows)
 }
 
+func (d *SqliteBackend) SeriesSummary(slug string) (*types.SeriesSummary, error) {
+	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary WHERE slug = ?;`
+
+	row := d.db.QueryRow(query, slug)
+	var summary types.SeriesSummary
+	err := row.Scan(&summary.Slug, &summary.Name, &summary.ItemCount, &summary.TotalValue, &summary.Unfunded, &summary.Redeemed, &summary.Unredeemed)
+	if err != nil {
+		return &types.SeriesSummary{}, err
+	}
+
+	return &summary, nil
+}
+
 func scanSeriesSummaries(rows *sql.Rows) ([]types.SeriesSummary, error) {
 	var summaries []types.SeriesSummary
 	for rows.Next() {

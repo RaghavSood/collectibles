@@ -37,6 +37,7 @@ func (s *Server) Serve() {
 	router.GET("/creator/:slug", s.creator)
 
 	router.GET("/series", s.series)
+	router.GET("/series/:slug", s.seriesDetail)
 
 	router.GET("/items", s.items)
 
