@@ -35,4 +35,6 @@ type Storage interface {
 
 	TransactionSummariesByItem(sku string) ([]types.Transaction, error)
 	TransactionSummariesBySeries(seriesSlug string) ([]types.Transaction, error)
+
+	GeneralStatistics() (*types.GeneralStatistics, error)
 }

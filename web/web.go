@@ -68,8 +68,15 @@ func (s *Server) Serve() {
 }
 
 func (s *Server) index(c *gin.Context) {
+	stats, err := s.db.GeneralStatistics()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	s.renderTemplate(c, "index.tmpl", map[string]interface{}{
 		"Title": "Home",
+		"Stats": stats,
 	})
 }
 
