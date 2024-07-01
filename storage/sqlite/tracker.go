@@ -1,8 +1,13 @@
 package sqlite
 
-import "github.com/RaghavSood/collectibles/types"
+import (
+	"time"
+
+	"github.com/RaghavSood/collectibles/types"
+)
 
 func (d *SqliteBackend) RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error {
+	blockTimeAsTime := time.Unix(int64(blockTime), 0)
 	tx, err := d.db.Begin()
 	if err != nil {
 		return err
@@ -17,7 +22,7 @@ func (d *SqliteBackend) RecordTransactionEffects(outpoints []types.Outpoint, spe
 	}
 
 	for i, txid := range spentTxids {
-		_, err := tx.Exec(`UPDATE outpoints SET spending_txid = ?, spending_vin = ?, spending_block_height = ?, spending_block_time = ? WHERE txid = ? AND vout = ?`, spendingTxids[i], spendingVins[i], blockHeight, blockTime, txid, spentVins[i])
+		_, err := tx.Exec(`UPDATE outpoints SET spending_txid = ?, spending_vin = ?, spending_block_height = ?, spending_block_time = ? WHERE txid = ? AND vout = ?`, spendingTxids[i], spendingVins[i], blockHeight, blockTimeAsTime, txid, spentVins[i])
 		if err != nil {
 			tx.Rollback()
 			return err
