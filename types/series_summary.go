@@ -5,4 +5,7 @@ type SeriesSummary struct {
 	Name       string  `json:"name"`
 	ItemCount  int     `json:"item_count"`
 	TotalValue *BigInt `json:"total_value"`
+	Unfunded   int     `json:"unfunded"`
+	Unredeemed int     `json:"unredeemed"`
+	Redeemed   int     `json:"redeemed"`
 }

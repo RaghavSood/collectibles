@@ -10,4 +10,7 @@ type ItemSummary struct {
 	Spent         int     `json:"spent"`
 	TotalReceived *BigInt `json:"total_received"`
 	TotalSpent    *BigInt `json:"total_spent"`
+	Unfunded      int     `json:"unfunded"`
+	Unredeemed    int     `json:"unredeemed"`
+	Redeemed      int     `json:"redeemed"`
 }
