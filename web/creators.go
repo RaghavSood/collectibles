@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,8 +28,15 @@ func (s *Server) creator(c *gin.Context) {
 		return
 	}
 
+	series, err := s.db.SeriesSummariesByCreator(slug)
+	if err != nil && err != sql.ErrNoRows {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	s.renderTemplate(c, "creator.tmpl", map[string]interface{}{
 		"Title":   creator.Name,
 		"Creator": creator,
+		"Series":  series,
 	})
 }

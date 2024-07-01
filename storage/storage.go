@@ -25,6 +25,7 @@ type Storage interface {
 	CreatorSummaries() ([]types.CreatorSummary, error)
 
 	SeriesSummaries() ([]types.SeriesSummary, error)
+	SeriesSummariesByCreator(creatorSlug string) ([]types.SeriesSummary, error)
 
 	ItemSummaries() ([]types.ItemSummary, error)
 }
