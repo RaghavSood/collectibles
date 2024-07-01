@@ -7,7 +7,7 @@ import (
 )
 
 func (d *SqliteBackend) CreatorSummaries() ([]types.CreatorSummary, error) {
-	query := `SELECT name, slug, series_count, item_count, tvl, unfunded, redeemed, unredeemed FROM creator_summary;`
+	query := `SELECT name, slug, series_count, item_count, tvl, unfunded, redeemed, unredeemed FROM creator_summary ORDER BY tvl desc;`
 
 	rows, err := d.db.Query(query)
 	if err != nil {
