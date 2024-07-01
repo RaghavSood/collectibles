@@ -22,7 +22,7 @@ func New() *Template {
 		"FormatNumber":  util.FormatNumber,
 	}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl"))
 	return &Template{
 		templates: templates,
 	}

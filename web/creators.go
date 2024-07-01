@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/RaghavSood/collectibles/notes"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,9 +35,17 @@ func (s *Server) creator(c *gin.Context) {
 		return
 	}
 
+	notePointer := notes.NotePointer{
+		NoteType:     notes.Creator,
+		PathElements: []string{creator.Slug},
+	}
+
+	notes := notes.ReadNotes([]notes.NotePointer{notePointer})
+
 	s.renderTemplate(c, "creator.tmpl", map[string]interface{}{
 		"Title":   creator.Name,
 		"Creator": creator,
 		"Series":  series,
+		"Notes":   notes,
 	})
 }

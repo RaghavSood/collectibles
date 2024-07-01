@@ -13,7 +13,6 @@ const (
 )
 
 func DeriveNotePath(noteType NoteType, elements ...string) (string, error) {
-	var noteID string
 	if len(elements) != 1 {
 		return "", fmt.Errorf("invalid number of elements: %d", len(elements))
 	}

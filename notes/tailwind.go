@@ -7,7 +7,7 @@ import (
 var fullMatch = map[string]string{}
 
 var prefixMatch = map[string]string{
-	"h3": "text-lg font-bold",
+	"h3": "text-lg font-semibold",
 	"a":  "text-orange-700 hover:underline hover:decoration-dotted hover:text-orange-400",
 }
 

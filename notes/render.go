@@ -59,15 +59,6 @@ func ReadNotes(pointers []NotePointer) []Note {
 			continue
 		}
 
-		stat, err := noteFile.Stat()
-		if err != nil {
-			log.Debug().
-				Err(err).
-				Str("path", path).
-				Msg("Failed to stat note file")
-			continue
-		}
-
 		content, err := ReadNoteFile(noteFile)
 		if err != nil {
 			log.Debug().
@@ -88,7 +79,6 @@ func ReadNotes(pointers []NotePointer) []Note {
 			NoteID:       fmt.Sprintf("%s/%s", pointer.NoteType, strings.Join(pointer.PathElements, ":")),
 			Type:         pointer.NoteType,
 			Data:         renderedContent,
-			ModTime:      stat.ModTime(),
 			Path:         path,
 			PathElements: pointer.PathElements,
 		}
