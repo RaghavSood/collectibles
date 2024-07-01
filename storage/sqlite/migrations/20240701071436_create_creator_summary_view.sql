@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE VIEW creator_summary_view AS
+CREATE VIEW creator_summary AS
 WITH series_counts AS (
   SELECT
     sc.creator_slug,
@@ -70,5 +70,5 @@ LEFT JOIN status_counts stc ON c.slug = stc.creator_slug;
 
 -- +goose Down
 -- +goose StatementBegin
-DROP VIEW creator_summary_view;
+DROP VIEW creator_summary;
 -- +goose StatementEnd

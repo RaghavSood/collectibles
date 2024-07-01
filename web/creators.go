@@ -23,7 +23,7 @@ func (s *Server) creators(c *gin.Context) {
 
 func (s *Server) creator(c *gin.Context) {
 	slug := c.Param("slug")
-	creator, err := s.db.GetCreator(slug)
+	creator, err := s.db.CreatorSummary(slug)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
