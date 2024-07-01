@@ -34,6 +34,12 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		return
 	}
 
+	addresses, err := s.db.AddressSummariesBySeries(slug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	notePointer := notes.NotePointer{
 		NoteType:     notes.Series,
 		PathElements: []string{series.Slug},
@@ -42,9 +48,10 @@ func (s *Server) seriesDetail(c *gin.Context) {
 	notes := notes.ReadNotes([]notes.NotePointer{notePointer})
 
 	s.renderTemplate(c, "series_detail.tmpl", map[string]interface{}{
-		"Title":  series.Name,
-		"Series": series,
-		"Items":  items,
-		"Notes":  notes,
+		"Title":     series.Name,
+		"Series":    series,
+		"Items":     items,
+		"Notes":     notes,
+		"Addresses": addresses,
 	})
 }

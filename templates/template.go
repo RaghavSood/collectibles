@@ -20,9 +20,10 @@ func New() *Template {
 		"NoEscape":      util.NoEscapeHTML,
 		"BTCValueToUSD": util.BTCValueToUSD,
 		"FormatNumber":  util.FormatNumber,
+		"MultiParam":    util.MultiParam,
 	}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl"))
 	return &Template{
 		templates: templates,
 	}

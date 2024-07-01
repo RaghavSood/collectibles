@@ -45,3 +45,7 @@ func FormatNumber(number string) string {
 	// Concatenate the formatted integer part with the decimal part
 	return integerPart + decimalPart
 }
+
+func MultiParam(els ...any) []any {
+	return els
+}

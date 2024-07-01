@@ -1,0 +1,48 @@
+{{ define "address_list" }}
+{{ $list := index . 0 }}
+{{ $showItemLink := index . 1 }}
+<div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4 w-full overflow-x-scroll">
+<table class="min-w-full border border-orange-700">
+  <thead>
+    <tr>
+      <th class="text-start px-4 py-2 border-b border-orange-700">Serial</th>
+      <th class="text-start px-4 py-2 border-b border-orange-700">Address</th>
+      <th class="text-start px-4 py-2 border-b border-orange-700">Funded At</th>
+      <th class="text-start px-4 py-2 border-b border-orange-700">Redeemed At</th>
+      <th class="text-start px-4 py-2 border-b border-orange-700">Balance</th>
+      {{ if $showItemLink }}
+        <th class="text-start px-4 py-2 border-b border-orange-700"></th>
+      {{ end }}
+    </tr>
+  </thead>
+  <tbody class="text-sm">
+    {{ range $list }}
+      <tr>
+        <td class="text-start px-4 py-2 border-b border-orange-700">{{ .Serial }}</td>
+        <td class="text-start px-4 py-2 border-b border-orange-700"><a href="//mempool.space/address/{{ .Address }}" target="_blank" class="hover:underline hover:text-orange-400 hover:decoration-dotted">{{ .Address }}</a></td>
+        <td class="text-start px-4 py-2 border-b border-orange-700">
+          {{ if .FirstActive.IsZero }}
+            -
+          {{ else }}
+            {{ .FirstActive.UTC }}
+          {{ end }}
+        </td>
+        <td class="text-start px-4 py-2 border-b border-orange-700">
+          {{ if .RedeemedOn.IsZero }}
+            -
+          {{ else }}
+            {{ .RedeemedOn.UTC }}
+          {{ end }}
+        </td>
+        <td class="text-start px-4 py-2 border-b border-orange-700">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
+        {{ if $showItemLink }}
+          <td class="text-start px-4 py-2 border-b border-orange-700">
+            <a href="/item/{{ .SKU }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">Item</a>
+          </td>
+        {{ end }}
+      </tr>
+    {{ end }}
+  </tbody>
+</table>
+</div>
+{{ end }}
