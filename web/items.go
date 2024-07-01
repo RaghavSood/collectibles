@@ -18,3 +18,17 @@ func (s *Server) items(c *gin.Context) {
 		"Items": items,
 	})
 }
+
+func (s *Server) item(c *gin.Context) {
+	sku := c.Param("sku")
+	item, err := s.db.ItemSummary(sku)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	s.renderTemplate(c, "item.tmpl", map[string]interface{}{
+		"Title": "Item",
+		"Item":  item,
+	})
+}

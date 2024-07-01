@@ -40,6 +40,7 @@ func (s *Server) Serve() {
 	router.GET("/series/:slug", s.seriesDetail)
 
 	router.GET("/items", s.items)
+	router.GET("/item/:sku", s.item)
 
 	router.GET("/ogimage/:slug", s.ogimage)
 

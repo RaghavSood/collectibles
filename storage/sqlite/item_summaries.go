@@ -28,6 +28,19 @@ func (d *SqliteBackend) ItemSummariesBySeries(slug string) ([]types.ItemSummary,
 	return scanItemSummaries(rows)
 }
 
+func (d *SqliteBackend) ItemSummary(sku string) (*types.ItemSummary, error) {
+	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary WHERE sku = ?;`
+
+	row := d.db.QueryRow(query, sku)
+	var summary types.ItemSummary
+	err := row.Scan(&summary.SKU, &summary.Serial, &summary.SeriesName, &summary.SeriesSlug, &summary.TotalValue, &summary.Unspent, &summary.Spent, &summary.TotalReceived, &summary.TotalSpent, &summary.Unfunded, &summary.Redeemed, &summary.Unredeemed)
+	if err != nil {
+		return nil, err
+	}
+
+	return &summary, nil
+}
+
 func scanItemSummaries(rows *sql.Rows) ([]types.ItemSummary, error) {
 	var summaries []types.ItemSummary
 	for rows.Next() {
