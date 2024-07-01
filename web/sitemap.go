@@ -22,3 +22,19 @@ func (s *Server) sitemapCreators(c *gin.Context) {
 
 	c.XML(http.StatusOK, si)
 }
+
+func (s *Server) sitemapSeries(c *gin.Context) {
+	series, err := s.db.GetSeries()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch series"})
+		return
+	}
+
+	si := sitemap.New()
+	for _, serie := range series {
+		result := "https://collectible.money/series/" + serie.Slug
+		si.Add(&sitemap.URL{Loc: result})
+	}
+
+	c.XML(http.StatusOK, si)
+}
