@@ -17,10 +17,11 @@ type Template struct {
 
 func New() *Template {
 	funcMap := template.FuncMap{
-		"NoEscape":      util.NoEscapeHTML,
-		"BTCValueToUSD": util.BTCValueToUSD,
-		"FormatNumber":  util.FormatNumber,
-		"MultiParam":    util.MultiParam,
+		"NoEscape":          util.NoEscapeHTML,
+		"BTCValueToUSD":     util.BTCValueToUSD,
+		"FormatNumber":      util.FormatNumber,
+		"MultiParam":        util.MultiParam,
+		"ItemPercentString": util.ItemPercentString,
 	}
 
 	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl"))

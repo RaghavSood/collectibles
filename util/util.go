@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
@@ -48,4 +49,13 @@ func FormatNumber(number string) string {
 
 func MultiParam(els ...any) []any {
 	return els
+}
+
+func ItemPercentString(count, total int) string {
+	if total == 0 {
+		return "0.00%"
+	}
+
+	percentage := float64(count) / float64(total) * 100
+	return fmt.Sprintf("%.2f%%", percentage)
 }
