@@ -1,0 +1,1 @@
+BTCC produced a total of 900 Purple 500k C-Series poker chips, each containing 0.5 BTC. Serials A00001 through A00700 were minted and funded in 2016, while serials A00701 through A00900 were minted and funded in 2017.
