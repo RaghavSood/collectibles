@@ -1,0 +1,1 @@
+BTCC produced a total of 1800 Blue 100k C-Series poker chips, each containing 0.01 BTC. Serials D00001 through D01300 were minted and funded in 2016, while serials D01301 through D01800 were minted and funded in 2017.
