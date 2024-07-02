@@ -1,0 +1,54 @@
+{{ define "content" }}
+  <div class="w-full bg-white p-2 overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr>
+          <th>Series Name</th>
+          <th>Series ID</th>
+          <th>Creators</th>
+          <th>Item ID</th>
+          <th>Serial</th>
+          <th>Address</th>
+          <th>Value</th>
+          <th>Funded At</th>
+          <th>Redeemed At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Masterlist }}
+          {{ $rowcolor := "odd:bg-gray-100 even:bg-white" }}
+          {{ if eq .FirstActive.IsZero false }}
+            {{ if .RedeemedOn.IsZero }}
+              {{ $rowcolor = "odd:bg-green-100 even:bg-green-200" }}
+            {{ else }}
+              {{ $rowcolor = "odd:bg-red-100 even:bg-red-200" }}
+            {{ end }}
+          {{ end }}
+          <tr class="whitespace-nowrap {{ $rowcolor }}">
+            <td class="px-2 py-1">{{ .SeriesName }}</td>
+            <td class="px-2 py-1">{{ .SeriesID }}</td>
+            <td class="px-2 py-1">{{ .Creators }}</td>
+            <td class="px-2 py-1">{{ .ItemID }}</td>
+            <td class="px-2 py-1">{{ .Serial }}</td>
+            <td class="px-2 py-1">{{ .Address }}</td>
+            <td class="px-2 py-1">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
+            <td class="px-2 py-1">
+              {{ if .FirstActive.IsZero }}
+                -
+              {{ else }}
+                {{ .FirstActive }}
+              {{ end }}
+            </td>
+            <td class="px-2 py-1">
+              {{ if .RedeemedOn.IsZero }}
+                -
+              {{ else }}
+                {{ .RedeemedOn }}
+              {{ end }}
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+{{ end }}
+

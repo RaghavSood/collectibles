@@ -47,6 +47,8 @@ func (s *Server) Serve() {
 	router.LoadHTMLGlob("templates/god_mode.tmpl")
 	router.GET("/godmode", s.godMode)
 
+	router.GET("/masterlist", s.masterList)
+
 	router.StaticFS("/static", http.FS(static.Static))
 	// Serve /favicon.ico and /robots.txt from the root
 	router.GET("/favicon.ico", func(c *gin.Context) {
