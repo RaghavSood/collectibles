@@ -57,7 +57,7 @@ func (t *Tracker) Run() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
-	dbDumpTicker := time.NewTicker(1 * time.Minute)
+	dbDumpTicker := time.NewTicker(15 * time.Minute)
 	defer dbDumpTicker.Stop()
 
 	for {
