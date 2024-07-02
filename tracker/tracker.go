@@ -92,7 +92,10 @@ func (t *Tracker) processTransactionQueue() {
 	}
 
 	for _, tx := range txs {
-		log.Info().Str("txid", tx.Txid).Msg("Processing transaction")
+		log.Info().
+			Str("txid", tx.Txid).
+			Int64("block_height", tx.BlockHeight).
+			Msg("Processing transaction")
 		txDetails, err := t.client.GetTransaction(tx.Txid)
 		if err != nil {
 			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to get transaction details")
