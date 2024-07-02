@@ -57,8 +57,23 @@ func (t *Tracker) Run() {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
+	dbDumpTicker := time.NewTicker(1 * time.Minute)
+	defer dbDumpTicker.Stop()
+
 	for {
 		select {
+		case <-dbDumpTicker.C:
+			log.Info().Msg("Updating god view")
+			path, err := t.db.UpdateGodView()
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to update god view")
+				continue
+			}
+
+			log.Info().
+				Str("path", path).
+				Msg("God view updated")
+
 		case <-ticker.C:
 			log.Info().Msg("Checking for changes")
 			info, err := t.client.GetBlockchainInfo()

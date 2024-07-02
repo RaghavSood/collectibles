@@ -40,4 +40,6 @@ type Storage interface {
 	AddressSummariesBySeries(seriesSlug string) ([]types.AddressSummary, error)
 
 	GeneralStatistics() (*types.GeneralStatistics, error)
+
+	UpdateGodView() (string, error)
 }
