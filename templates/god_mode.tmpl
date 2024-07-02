@@ -1,86 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQLite Query Page</title>
+    <title>God Mode | Collectible Money</title>
     <script src="https://unpkg.com/sql.js-httpvfs@0.8.12/dist/index.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        textarea { width: 100%; height: 100px; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
+    <script src="https://www.unpkg.com/ace-builds@latest/src-noconflict/ace.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>SQLite Query Page</h1>
-    <textarea id="query">select * from god_view limit 100;</textarea>
-    <br><br>
-    <button onclick="executeQuery()">Execute Query</button>
-    <br><br>
-    <div id="result"></div>
+<body class="h-full bg-white flex flex-col font-mono">
+    <header class="flex items-center justify-between bg-white p-4">
+        <h1 class="flex-col text-lg w-1/2 font-semibold">God Mode | Collectible Money</h1>
+        <a href="/" class="text-end flex-col w-1/2 text-blue-600">Back to homepage</a>
+    </header>
+    
+    <main class="">
+        <div class="w-full flex flex-col">
+          <div class="mt-2 h-32 pt-4 pb-4 text-base" id="query">select * from god_view limit 20;</div>
+            <button id="execute-btn" onclick="executeQuery()" class="mt-2 mb-2 bg-slate-200 hover:bg-slate-300 font-semibold py-2 px-4">Execute Query</button>
+        </div>
+        <div id="result" class="w-full bg-white pt-2 pb-2 border border-gray-300 rounded shadow overflow-auto">
+            <!-- Results will be displayed here -->
+        </div>
+    </main>
+
+    <footer class="bg-white/80 text-center p-2 text-sm text-gray-600">
+      collectible.money by <a href="https://raghavsood.com" target="_blank" class="text-blue-600">Raghav Sood</a>
+    </footer>
 
     <script>
-        let db;
+      var editor = ace.edit("query");
+      editor.setTheme("ace/theme/monokai");
+      editor.setOptions({
+        printMargin: false,
+      })
+      editor.session.setMode("ace/mode/sql");
 
+        let db;
         async function initDB() {
             const workerUrl = '/static/sqlite.worker.js';
             const wasmUrl = 'https://r2.collectible.money/sql-wasm.wasm';
-
             const config = [{
                 from: "inline",
                 config: {
-                  requestChunkSize: 1024 * 1024,
+                  requestChunkSize: 32 * 1024,
                   serverMode: "full",
                   url: "https://r2.collectible.money/prod/goddb.sqlite",
                 }
             }];
-
             db = await createDbWorker(
                 config,
                 workerUrl,
                 wasmUrl
             );
-        }
 
+            executeQuery();
+        }
+        
         async function executeQuery() {
             if (!db) {
                 await initDB();
             }
-
-            const query = document.getElementById('query').value;
+            // const query = document.getElementById('query').value;
+            button = document.getElementById('execute-btn');
+            button.disabled = true;
+            editor.setReadOnly(true);
+            const query = editor.getValue();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p class="text-center text-gray-600">Executing query...</p>';
             try {
                 const result = await db.db.query(query);
-                displayResult(result);
+                displayResult(result, query);
             } catch (error) {
-                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+                resultDiv.innerHTML = `<p class="text-center text-red-600">Error: ${error.message}</p>`;
             }
+            editor.setReadOnly(false);
+            button.disabled = false;
         }
-
-        function displayResult(result) {
+        
+        function displayResult(result, query) {
+            const resultDiv = document.getElementById('result');
             if (result.length === 0) {
-                document.getElementById('result').innerHTML = '<p>No results found.</p>';
+                resultDiv.innerHTML = '<p class="text-gray-600">No results found.</p>';
                 return;
             }
-
-            let table = '<table><tr>';
+            let table = '<div class="overflow-x-auto"><table class="min-w-full text-sm bg-white">';
+            table += '<thead class="bg-gray-100"><tr>';
             for (const key in result[0]) {
-                table += `<th>${key}</th>`;
+                table += `<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${key}</th>`;
             }
-            table += '</tr>';
-
+            table += '</tr></thead><tbody>';
             for (const row of result) {
-                table += '<tr>';
+                table += '<tr class="border-t even:bg-white odd:bg-gray-200 border-gray-200">';
                 for (const key in row) {
-                    table += `<td>${row[key]}</td>`;
+                    table += `<td class="px-2 py-1 whitespace-nowrap text-gray-900">${row[key]}</td>`;
                 }
                 table += '</tr>';
             }
-            table += '</table>';
-
-            document.getElementById('result').innerHTML = table;
+            table += '</tbody></table></div>';
+            resultDiv.innerHTML = table;
         }
+
+        // Initialize the database when the page loads
+        window.addEventListener('load', initDB);
     </script>
 </body>
 </html>
