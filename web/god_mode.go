@@ -1,13 +1,10 @@
 package web
 
 import (
-	"net/http"
-
+	"github.com/RaghavSood/collectibles/templates"
 	"github.com/gin-gonic/gin"
 )
 
 func (s *Server) godMode(c *gin.Context) {
-	c.HTML(http.StatusOK, "god_mode.tmpl", map[string]interface{}{
-		"Title": "God Mode",
-	})
+	templates.RenderSingle(c.Writer, "god_mode.tmpl", nil)
 }

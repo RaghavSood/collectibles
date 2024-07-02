@@ -30,6 +30,15 @@ func New() *Template {
 	}
 }
 
+func RenderSingle(w io.Writer, template string, data interface{}) error {
+	tmpl, err := template.New("").ParseFS(Templates, template)
+	if err != nil {
+		return err
+	}
+
+	return tmpl.Execute(w, data)
+}
+
 func (t *Template) Render(w io.Writer, contentTemplate string, data interface{}) error {
 	tmpl, err := t.templates.Clone()
 	if err != nil {

@@ -44,7 +44,6 @@ func (s *Server) Serve() {
 
 	router.GET("/ogimage/:slug", s.ogimage)
 
-	router.LoadHTMLGlob("templates/god_mode.tmpl")
 	router.GET("/godmode", s.godMode)
 
 	router.GET("/masterlist", s.masterList)
