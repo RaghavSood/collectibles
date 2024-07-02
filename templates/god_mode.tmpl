@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite Query Page</title>
+    <script src="https://unpkg.com/sql.js-httpvfs@0.8.12/dist/index.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        textarea { width: 100%; height: 100px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>SQLite Query Page</h1>
+    <textarea id="query">select * from god_view limit 100;</textarea>
+    <br><br>
+    <button onclick="executeQuery()">Execute Query</button>
+    <br><br>
+    <div id="result"></div>
+
+    <script>
+        let db;
+
+        async function initDB() {
+            const workerUrl = '/static/sqlite.worker.js';
+            const wasmUrl = 'https://r2.collectible.money/sql-wasm.wasm';
+
+            const config = [{
+                from: "inline",
+                config: {
+                  requestChunkSize: 1024 * 1024,
+                  serverMode: "full",
+                  url: "https://r2.collectible.money/prod/goddb.sqlite",
+                }
+            }];
+
+            db = await createDbWorker(
+                config,
+                workerUrl,
+                wasmUrl
+            );
+        }
+
+        async function executeQuery() {
+            if (!db) {
+                await initDB();
+            }
+
+            const query = document.getElementById('query').value;
+            try {
+                const result = await db.db.query(query);
+                displayResult(result);
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        function displayResult(result) {
+            if (result.length === 0) {
+                document.getElementById('result').innerHTML = '<p>No results found.</p>';
+                return;
+            }
+
+            let table = '<table><tr>';
+            for (const key in result[0]) {
+                table += `<th>${key}</th>`;
+            }
+            table += '</tr>';
+
+            for (const row of result) {
+                table += '<tr>';
+                for (const key in row) {
+                    table += `<td>${row[key]}</td>`;
+                }
+                table += '</tr>';
+            }
+            table += '</table>';
+
+            document.getElementById('result').innerHTML = table;
+        }
+    </script>
+</body>
+</html>
