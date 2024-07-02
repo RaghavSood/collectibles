@@ -2,11 +2,15 @@ package sqlite
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 )
 
 func (d *SqliteBackend) UpdateGodView() (string, error) {
-	newDbPath := fmt.Sprintf("collectibles_%d.sqlite", time.Now().Unix())
+	pathPrefix := os.Getenv("GOD_DB_PATH")
+	dbFile := fmt.Sprintf("collectibles_%d.sqlite", time.Now().Unix())
+	newDbPath := filepath.Join(pathPrefix, dbFile)
 
 	tx, err := d.db.Begin()
 	if err != nil {

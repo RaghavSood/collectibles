@@ -74,6 +74,18 @@ func (t *Tracker) Run() {
 				Str("path", path).
 				Msg("God view updated")
 
+			err = t.uploadGodDB(path)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to upload god view")
+				continue
+			}
+
+			// Delete after upload
+			err = os.Remove(path)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to delete god view")
+			}
+
 		case <-ticker.C:
 			log.Info().Msg("Checking for changes")
 			info, err := t.client.GetBlockchainInfo()
