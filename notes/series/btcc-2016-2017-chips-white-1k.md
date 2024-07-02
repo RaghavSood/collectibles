@@ -1,0 +1,1 @@
+BTCC produced a total of 5500 White 1k C-Series poker chips, each containing 0.001 BTC. Serials F00001 through F04000 were minted and funded in 2016, while serials F04001 through F05500 were minted and funded in 2017.
