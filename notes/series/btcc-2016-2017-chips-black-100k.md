@@ -1,0 +1,1 @@
+BTCC produced a total of 1600 Black 100k C-Series poker chips, each containing 0.1 BTC. Serials B00001 through B01200 were minted and funded in 2016, while serials B01201 through B01600 were minted and funded in 2017.
