@@ -30,13 +30,10 @@ func New() *Template {
 	}
 }
 
-func RenderSingle(w io.Writer, template string, data interface{}) error {
-	tmpl, err := template.New("").ParseFS(Templates, template)
-	if err != nil {
-		return err
-	}
+func RenderSingle(w io.Writer, filename string, data interface{}) error {
+	tmpl := template.Must(template.New("").Funcs(template.FuncMap{}).ParseFS(Templates, filename))
 
-	return tmpl.Execute(w, data)
+	return tmpl.ExecuteTemplate(w, filename, data)
 }
 
 func (t *Template) Render(w io.Writer, contentTemplate string, data interface{}) error {
