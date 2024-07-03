@@ -48,6 +48,12 @@ func (s *Server) Serve() {
 
 	router.GET("/masterlist", s.masterList)
 
+	router.GET("/snapshot/*path", s.snapshot)
+	embeds := router.Group("/embed")
+	{
+		embeds.GET("/creator/:slug", s.embedCreator)
+	}
+
 	router.StaticFS("/static", http.FS(static.Static))
 	// Serve /favicon.ico and /robots.txt from the root
 	router.GET("/favicon.ico", func(c *gin.Context) {
@@ -89,6 +95,15 @@ func (s *Server) about(c *gin.Context) {
 	s.renderTemplate(c, "about.tmpl", map[string]interface{}{
 		"Title": "About",
 	})
+}
+
+func (s *Server) renderNonBaseTemplate(c *gin.Context, newBase, template string, params map[string]interface{}) {
+	tmpl := templates.New()
+	err := tmpl.RenderNonBase(c.Writer, newBase, template, params)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 }
 
 func (s *Server) renderTemplate(c *gin.Context, template string, params map[string]interface{}) {

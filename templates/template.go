@@ -24,7 +24,7 @@ func New() *Template {
 		"ItemPercentString": util.ItemPercentString,
 	}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl"))
 	return &Template{
 		templates: templates,
 	}
@@ -49,4 +49,19 @@ func (t *Template) Render(w io.Writer, contentTemplate string, data interface{})
 	}
 
 	return tmpl.ExecuteTemplate(w, "base.tmpl", data)
+}
+
+func (t *Template) RenderNonBase(w io.Writer, newBase, contentTemplate string, data interface{}) error {
+	tmpl, err := t.templates.Clone()
+	if err != nil {
+		return err
+	}
+
+	// Parse the specific content template
+	_, err = tmpl.ParseFS(Templates, contentTemplate)
+	if err != nil {
+		return err
+	}
+
+	return tmpl.ExecuteTemplate(w, newBase, data)
 }
