@@ -2,7 +2,9 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/chromedp/chromedp"
@@ -26,10 +28,12 @@ func (s *Server) snapshot(c *gin.Context) {
 	// it is no longer needed
 	defer cancel()
 
+	port := os.Getenv("COLLECTIBLES_PORT")
+
 	var screenshotBuffer []byte
 	err := chromedp.Run(ctx,
 		chromedp.EmulateViewport(2560, 1440),
-		chromedp.Navigate("https://collectible.money/embed/"+path),
+		chromedp.Navigate(fmt.Sprintf("http://localhost:%s/embed/%s", port, path)),
 		chromedp.Screenshot("#embed", &screenshotBuffer, chromedp.NodeVisible),
 	)
 	if err != nil {
