@@ -1,8 +1,8 @@
 {{ define "content" }}
   <div class="lg:container mx-auto p-4">
     <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
-      <h2 class="text-xl font-semibold">{{ .Item.SeriesName }} - {{ .Item.SerialString }}</h2>
-      <h3 class="text-sm text-slate-600">{{ .Item.SKU }}</h3>
+      <h2 class="text-xl font-semibold">{{ .Item.SeriesName }}</h2>
+      <h3 class="text-sm text-slate-600">{{ .Item.SerialString }}</h3>
       {{ if eq .Item.Unfunded 1 }}
         <span class="text-blue-700">Unfunded</span>
       {{ end }}
