@@ -126,24 +126,25 @@ func (t *Tracker) processTransactionQueue() {
 		txDetails, err := t.client.GetTransaction(tx.Txid)
 		if err != nil {
 			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to get transaction details")
-			continue
+			return
 		}
 
 		if txDetails.Blockhash == "" {
 			log.Info().Str("txid", tx.Txid).Msg("Transaction not yet confirmed")
-			continue
+			return
 		}
 
 		block, err := t.client.GetBlock(txDetails.Blockhash)
 		if err != nil {
 			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to get block details")
-			continue
+			return
 		}
 
 		outpoints, spentTxids, spentVouts, spendingTxids, spendingVins := t.scanTransactions(block.Height, block.Time, []btypes.TransactionDetail{txDetails}, "bitcoin")
 		err = t.db.RecordTransactionEffects(outpoints, spentTxids, spentVouts, spendingTxids, spendingVins, block.Height, block.Time)
 		if err != nil {
 			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to record transaction effects")
+			return
 		}
 	}
 }
