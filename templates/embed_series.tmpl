@@ -1,0 +1,31 @@
+{{ define "content" }}
+{{ with .Series }}
+  <h2 class="text-xl font-semibold">{{ .Name }}</h2>
+  <div class="grid grid-cols-1">
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .ItemCount }}</p>
+      <h3 class="text-xs">Items</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .TotalValue.SatoshisToBTC true }}</p>
+      <h3 class="text-xs">TVL BTC</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .TotalValue)) }}</p>
+      <h3 class="text-xs">TVL USD</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .Unfunded }} <span class="text-sm font-normal text-slate-400">({{ ItemPercentString .Unfunded .ItemCount }})</span></p>
+      <h3 class="text-xs mb-4">Unfunded</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .Unredeemed }} <span class="text-sm font-normal text-slate-400">({{ ItemPercentString .Unredeemed .ItemCount }})</span></p>
+      <h3 class="text-xs mb-4">Unredeemed</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .Redeemed }} <span class="text-sm font-normal text-slate-400">({{ ItemPercentString .Redeemed .ItemCount }})</span></p>
+      <h3 class="text-xs mb-4">Redeemed</h3>
+    </div>
+  </div>
+{{ end}}
+{{ end }}

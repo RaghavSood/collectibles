@@ -1,0 +1,48 @@
+{{ define "content" }}
+  <h2 class="text-xl font-semibold">{{ .Item.SeriesName }} - {{ .Item.SerialString }}</h2>
+  <h3 class="text-sm text-slate-700">{{ .Item.SKU }}</h3>
+  <div class="grid grid-cols-1">
+    <div class="p-4">
+      <p class="text-2xl font-medium">
+        {{ if eq .Item.Unfunded 1 }}
+          <span class="text-blue-700">Unfunded</span>
+        {{ end }}
+        {{ if eq .Item.Unredeemed 1 }}
+          <span class="text-green-700">Unredeemed</span>
+        {{ end }}
+        {{ if eq .Item.Redeemed 1 }}
+          <span class="text-red-700">Redeemed</span>
+        {{ end }}
+      </p>
+      <h3 class="text-xs">Status</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">{{ .Item.TotalValue.SatoshisToBTC true }}</p>
+      <h3 class="text-xs">TVL BTC</h3>
+    </div>
+    <div class="p-4">
+      <p class="text-2xl font-medium">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .Item.TotalValue)) }}</p>
+      <h3 class="text-xs">TVL USD</h3>
+    </div>
+    <div class="p-4">
+      {{ range .Addresses }}
+        <p class="text-2xl font-medium break-all">{{ .Address }}</p>
+        <p class="text-xs text-green-700">
+          {{ if .FirstActive.IsZero }}
+            -
+          {{ else }}
+            Funded: {{ .FirstActive.UTC }}
+          {{ end }}
+        </p>
+        <p class="text-xs text-red-700">
+          {{ if .RedeemedOn.IsZero }}
+            -
+          {{ else }}
+            Redeemed: {{ .RedeemedOn.UTC }}
+          {{ end }}
+        </p>
+      {{ end }}
+      <h3 class="text-xs">Addresses</h3>
+    </div>
+  </div>
+{{ end }}

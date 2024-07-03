@@ -52,6 +52,8 @@ func (s *Server) Serve() {
 	embeds := router.Group("/embed")
 	{
 		embeds.GET("/creator/:slug", s.embedCreator)
+		embeds.GET("/series/:slug", s.embedSeries)
+		embeds.GET("/item/:sku", s.embedItem)
 	}
 
 	router.StaticFS("/static", http.FS(static.Static))
