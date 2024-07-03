@@ -25,22 +25,26 @@
       <h3 class="text-xs">TVL USD</h3>
     </div>
     <div class="p-4">
-      {{ range .Addresses }}
-        <p class="text-2xl font-medium break-all">{{ .Address }}</p>
-        <p class="text-xs text-green-700">
-          {{ if .FirstActive.IsZero }}
-            -
-          {{ else }}
-            Funded: {{ .FirstActive.UTC }}
-          {{ end }}
-        </p>
-        <p class="text-xs text-red-700">
-          {{ if .RedeemedOn.IsZero }}
-            -
-          {{ else }}
-            Redeemed: {{ .RedeemedOn.UTC }}
-          {{ end }}
-        </p>
+      {{ if .Addresses }}
+        {{ range .Addresses }}
+          <p class="text-sm break-all">{{ .Address }}</p>
+          <p class="text-xs text-green-700">
+            {{ if .FirstActive.IsZero }}
+              -
+            {{ else }}
+              Funded: {{ .FirstActive.UTC }}
+            {{ end }}
+          </p>
+          <p class="text-xs text-red-700">
+            {{ if .RedeemedOn.IsZero }}
+              -
+            {{ else }}
+              Redeemed: {{ .RedeemedOn.UTC }}
+            {{ end }}
+          </p>
+        {{ end }}
+      {{ else }}
+        <p class="text-sm font-medium">-</p>
       {{ end }}
       <h3 class="text-xs">Addresses</h3>
     </div>
