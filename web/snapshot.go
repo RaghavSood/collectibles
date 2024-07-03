@@ -28,7 +28,7 @@ func (s *Server) snapshot(c *gin.Context) {
 
 	var screenshotBuffer []byte
 	err := chromedp.Run(ctx,
-		chromedp.Navigate("http://localhost:8086/embed/"+path),
+		chromedp.Navigate("https://collectible.money/embed/"+path),
 		chromedp.Screenshot("#embed", &screenshotBuffer, chromedp.NodeVisible),
 	)
 	if err != nil {
