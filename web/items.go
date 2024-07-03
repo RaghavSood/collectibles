@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,7 @@ func (s *Server) item(c *gin.Context) {
 	}
 
 	s.renderTemplate(c, "item.tmpl", map[string]interface{}{
-		"Title":        "Item",
+		"Title":        fmt.Sprintf("%s - %s", item.SeriesName, item.SerialString()),
 		"Item":         item,
 		"Transactions": itemTransactions,
 		"Addresses":    addresses,
