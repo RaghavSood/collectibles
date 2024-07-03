@@ -13,6 +13,7 @@ require (
 	github.com/chromedp/chromedp v0.9.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/gomarkdown/markdown v0.0.0-20240626202925-2eda941fd024
+	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/pressly/goose/v3 v3.21.1
 	github.com/rs/zerolog v1.33.0

@@ -20,6 +20,12 @@ func (s *Server) snapshot(c *gin.Context) {
 
 	path = path[1:] // Remove the leading slash
 
+	data, ok := s.snapshotCache.Get(path)
+	if ok {
+		c.Data(http.StatusOK, "image/png", data)
+		return
+	}
+
 	timeoutCtx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	ctx, cancel := chromedp.NewContext(
 		timeoutCtx,
@@ -41,5 +47,6 @@ func (s *Server) snapshot(c *gin.Context) {
 		return
 	}
 
+	s.snapshotCache.Add(path, screenshotBuffer)
 	c.Data(http.StatusOK, "image/png", screenshotBuffer)
 }

@@ -3,6 +3,7 @@ package web
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/RaghavSood/collectibles/clogger"
 	"github.com/RaghavSood/collectibles/middleware"
@@ -10,17 +11,21 @@ import (
 	"github.com/RaghavSood/collectibles/storage"
 	"github.com/RaghavSood/collectibles/templates"
 	"github.com/gin-gonic/gin"
+	"github.com/hashicorp/golang-lru/v2/expirable"
 )
 
 type Server struct {
-	db       storage.Storage
-	readOnly bool
+	db            storage.Storage
+	readOnly      bool
+	snapshotCache *expirable.LRU[string, []byte]
 }
 
 func NewServer(db storage.Storage, noindex bool) *Server {
+	cache := expirable.NewLRU[string, []byte](500, nil, 90*time.Second)
 	return &Server{
-		db:       db,
-		readOnly: noindex,
+		db:            db,
+		readOnly:      noindex,
+		snapshotCache: cache,
 	}
 }
 
