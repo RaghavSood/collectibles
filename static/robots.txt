@@ -1,2 +1,5 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://collectible.money/sitemap/creators.xml
+Sitemap: https://collectible.money/sitemap/series.xml
