@@ -4,6 +4,7 @@ import (
 	"embed"
 	"html/template"
 	"io"
+	"time"
 
 	"github.com/RaghavSood/collectibles/util"
 )
@@ -17,6 +18,8 @@ type Template struct {
 
 func New() *Template {
 	funcMap := template.FuncMap{
+		"Now":               time.Now,
+		"NowSecond":         func() time.Time { return time.Now().Truncate(time.Second) },
 		"NoEscape":          util.NoEscapeHTML,
 		"BTCValueToUSD":     util.BTCValueToUSD,
 		"FormatNumber":      util.FormatNumber,
