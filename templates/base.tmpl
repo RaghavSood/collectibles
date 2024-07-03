@@ -40,6 +40,18 @@
     {{ block "content" . }}{{ end }}
   </main>
   {{ template "footer" . }}
+  <script src="/static/clipboard.min.js"></script>
+  <script>
+    var clipboard = new ClipboardJS('.clipboard');
+    clipboard.on('success', function(e) {
+      e.clearSelection();
+      originalText = e.trigger.textContent;
+      e.trigger.textContent = 'Copied!';
+      setTimeout(function() {
+        e.trigger.textContent = originalText;
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
 

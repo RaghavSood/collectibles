@@ -13,6 +13,11 @@
         <span class="text-red-700">Redeemed</span>
       {{ end }}
       <p><a href="/series/{{ .Item.SeriesSlug }}" class="text-orange-700 hover:underline hover:text-orange-400">View Series</a></p>
+      <div class="text-xs text-slate-400 text-end">
+        <a class="hover:text-slate-500 clipboard" data-clipboard-text="[url=https://collectible.money/item/{{ .Item.SKU }}][img]https://collectible.money/snapshot/item/{{ .Item.SKU }}[/img][/url]">
+          Copy BBCode
+        </a>
+      </div>
     </div>
     {{ template "address_list" (MultiParam .Addresses false) }}
     <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4 w-full overflow-x-scroll">

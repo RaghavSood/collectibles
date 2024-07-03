@@ -20,6 +20,11 @@
             <h3 class="text-xs mb-4">TVL USD</h3>
           </div>
         </div>
+      <div class="text-xs text-slate-400 text-end">
+        <a class="hover:text-slate-500 clipboard" data-clipboard-text="[url=https://collectible.money/creator/{{ .Creator.Slug }}][img]https://collectible.money/snapshot/creator/{{ .Creator.Slug }}[/img][/url]">
+          Copy BBCode
+        </a>
+      </div>
     </div>
     {{ range .Notes }}
       {{ template "note" . }}
