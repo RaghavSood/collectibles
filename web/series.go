@@ -1,9 +1,11 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/RaghavSood/collectibles/notes"
+	"github.com/RaghavSood/collectibles/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,6 +51,7 @@ func (s *Server) seriesDetail(c *gin.Context) {
 
 	s.renderTemplate(c, "series_detail.tmpl", map[string]interface{}{
 		"Title":     series.Name,
+		"Desc":      fmt.Sprintf("%s has %d items worth %s BTC (%s USD)", series.Name, series.ItemCount, series.TotalValue.SatoshisToBTC(true), util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(series.TotalValue)))),
 		"Series":    series,
 		"Items":     items,
 		"Notes":     notes,

@@ -2,9 +2,11 @@ package web
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/RaghavSood/collectibles/notes"
+	"github.com/RaghavSood/collectibles/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,6 +46,7 @@ func (s *Server) creator(c *gin.Context) {
 
 	s.renderTemplate(c, "creator.tmpl", map[string]interface{}{
 		"Title":   creator.Name,
+		"Desc":    fmt.Sprintf("%s has made %d series, with %d items worth %s BTC (%s USD)", creator.Name, len(series), creator.ItemCount, creator.TotalValue.SatoshisToBTC(true), util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(creator.TotalValue)))),
 		"Creator": creator,
 		"Series":  series,
 		"Notes":   notes,
