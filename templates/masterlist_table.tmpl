@@ -29,12 +29,12 @@
             {{ end }}
           {{ end }}
           <tr class="whitespace-nowrap {{ $rowcolor }}">
-            <td class="px-2 py-1"><a class="hover:underline hover:text-orange-400 hover:decoration-dotted" href="/series/{{ .SeriesID }}">{{ .SeriesName }}</a></td>
+            <td class="px-2 py-1"><a class="underline decoration-dotted hover:underline hover:text-orange-400 hover:decoration-dotted" href="/series/{{ .SeriesID }}">{{ .SeriesName }}</a></td>
             {{ if $showSeriesID }}
               <td class="px-2 py-1">{{ .SeriesID }}</td>
             {{ end }}
             <td class="px-2 py-1">{{ .Creators }}</td>
-            <td class="px-2 py-1"><a class="hover:underline hover:text-orange-400 hover:decoration-dotted" href="/item/{{ .ItemID}}">{{ .ItemID }}</a></td>
+            <td class="px-2 py-1"><a class="underline decoration-dotted hover:underline hover:text-orange-400 hover:decoration-dotted" href="/item/{{ .ItemID}}">{{ .ItemID }}</a></td>
             <td class="px-2 py-1">{{ .Serial }}</td>
             <td class="px-2 py-1">{{ .Address }}</td>
             <td class="px-2 py-1">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
