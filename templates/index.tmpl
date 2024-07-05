@@ -51,15 +51,15 @@
         </thead>
         <tbody class="text-sm">
           {{ range .RecentRedemptions }}
-            <tr>
+            <tr class="whitespace-nowrap">
               <td class="px-4 py-2 border-b border-orange-700">{{ .RedeemedOn.UTC }}</td>
               <td class="px-4 py-2 border-b border-orange-700">
-                <a href="/series/{{ .SeriesID }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
+                <a href="/series/{{ .SeriesID }}" class="underline decoration-dotted hover:underline hover:text-orange-400 hover:decoration-dotted">
                   {{ .SeriesName }}
                 </a>
               </td>
               <td class="px-4 py-2 border-b border-orange-700">
-                <a href="/item/{{ .ItemID }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
+                <a href="/item/{{ .ItemID }}" class="underline decoration-dotted hover:underline hover:text-orange-400 hover:decoration-dotted">
                   {{ .SerialString }}
                 </a>
               </td>
