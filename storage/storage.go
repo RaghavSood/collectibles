@@ -42,5 +42,6 @@ type Storage interface {
 	GeneralStatistics() (*types.GeneralStatistics, error)
 
 	GodView() ([]types.GodView, error)
+	Search(query string) ([]types.GodView, error)
 	UpdateGodView() (string, error)
 }

@@ -27,7 +27,7 @@ func New() *Template {
 		"ItemPercentString": util.ItemPercentString,
 	}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl", "masterlist_table.tmpl"))
 	return &Template{
 		templates: templates,
 	}

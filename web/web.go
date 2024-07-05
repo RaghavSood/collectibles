@@ -53,6 +53,8 @@ func (s *Server) Serve() {
 
 	router.GET("/masterlist", s.masterList)
 
+	router.GET("/search", s.search)
+
 	router.GET("/snapshot/*path", s.snapshot)
 	embeds := router.Group("/embed")
 	{

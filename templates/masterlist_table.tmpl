@@ -1,0 +1,59 @@
+{{ define "masterlist_table" }}
+  {{ $list := index . 0 }}
+  {{ $showSeriesID := index . 1 }}
+  <div class="w-full bg-white p-2 overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr>
+          <th>Series Name</th>
+          {{ if $showSeriesID }}
+            <th>Series ID</th>
+          {{ end }}
+          <th>Creators</th>
+          <th>Item ID</th>
+          <th>Serial</th>
+          <th>Address</th>
+          <th>Value</th>
+          <th>Funded At</th>
+          <th>Redeemed At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $list }}
+          {{ $rowcolor := "odd:bg-gray-100 even:bg-white" }}
+          {{ if eq .FirstActive.IsZero false }}
+            {{ if .RedeemedOn.IsZero }}
+              {{ $rowcolor = "odd:bg-green-100 even:bg-green-200" }}
+            {{ else }}
+              {{ $rowcolor = "odd:bg-red-100 even:bg-red-200" }}
+            {{ end }}
+          {{ end }}
+          <tr class="whitespace-nowrap {{ $rowcolor }}">
+            <td class="px-2 py-1"><a class="hover:underline hover:text-orange-400 hover:decoration-dotted" href="/series/{{ .SeriesID }}">{{ .SeriesName }}</a></td>
+            {{ if $showSeriesID }}
+              <td class="px-2 py-1">{{ .SeriesID }}</td>
+            {{ end }}
+            <td class="px-2 py-1">{{ .Creators }}</td>
+            <td class="px-2 py-1"><a class="hover:underline hover:text-orange-400 hover:decoration-dotted" href="/item/{{ .ItemID}}">{{ .ItemID }}</a></td>
+            <td class="px-2 py-1">{{ .Serial }}</td>
+            <td class="px-2 py-1">{{ .Address }}</td>
+            <td class="px-2 py-1">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
+            <td class="px-2 py-1">
+              {{ if .FirstActive.IsZero }}
+                -
+              {{ else }}
+                {{ .FirstActive }}
+              {{ end }}
+            </td>
+            <td class="px-2 py-1">
+              {{ if .RedeemedOn.IsZero }}
+                -
+              {{ else }}
+                {{ .RedeemedOn }}
+              {{ end }}
+          </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+{{ end }}
