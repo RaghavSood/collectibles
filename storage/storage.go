@@ -43,5 +43,6 @@ type Storage interface {
 
 	GodView() ([]types.GodView, error)
 	Search(query string) ([]types.GodView, error)
+	RecentRedemptions(limit int) ([]types.GodView, error)
 	UpdateGodView() (string, error)
 }

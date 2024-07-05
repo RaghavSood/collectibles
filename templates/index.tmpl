@@ -37,6 +37,43 @@
           </div>
         </div>
     </div>
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4 w-full overflow-x-scroll">
+      <h2 class="text-xl font-semibold mb-2">Recent Redemptions</h2>
+      <table class="min-w-full border border-orange-700">
+        <thead>
+          <tr>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Redeemed On</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Series</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Serial</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Item Value (BTC)</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Item Value (USD)</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          {{ range .RecentRedemptions }}
+            <tr>
+              <td class="px-4 py-2 border-b border-orange-700">{{ .RedeemedOn.UTC }}</td>
+              <td class="px-4 py-2 border-b border-orange-700">
+                <a href="/series/{{ .SeriesID }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
+                  {{ .SeriesName }}
+                </a>
+              </td>
+              <td class="px-4 py-2 border-b border-orange-700">
+                <a href="/item/{{ .ItemID }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
+                  {{ .SerialString }}
+                </a>
+              </td>
+              <td class="px-4 py-2 border-b border-orange-700">
+                <span class="text-red-700">{{ .TotalValue.SatoshisToBTC true }} BTC</span>
+              </td>
+              <td class="px-4 py-2 border-b border-orange-700">
+                <span class="text-red-700">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .TotalValue)) }}</span>
+              </td>
+            </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
   </div>
 {{ end }}
 

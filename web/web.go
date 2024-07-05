@@ -94,9 +94,12 @@ func (s *Server) index(c *gin.Context) {
 		return
 	}
 
+	recentRedemptions, err := s.db.RecentRedemptions(50)
+
 	s.renderTemplate(c, "index.tmpl", map[string]interface{}{
-		"Title": "Home",
-		"Stats": stats,
+		"Title":             "Home",
+		"Stats":             stats,
+		"RecentRedemptions": recentRedemptions,
 	})
 }
 

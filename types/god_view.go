@@ -13,3 +13,10 @@ type GodView struct {
 	FirstActive time.Time `json:"first_active"`
 	RedeemedOn  time.Time `json:"redeemed_on"`
 }
+
+func (g GodView) SerialString() string {
+	if g.Serial == nil || *g.Serial == "" {
+		return "No Serial"
+	}
+	return *g.Serial
+}
