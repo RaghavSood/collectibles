@@ -163,6 +163,10 @@ func (t *Tracker) processScriptQueue() {
 	}
 
 	for _, script := range scripts {
+		if script.Script == "" {
+			continue
+		}
+
 		if script.TryCount > 5 {
 			log.Warn().Str("script", script.Script).Int("try_count", script.TryCount).Msg("Script has been tried too many times, skipping")
 			continue
