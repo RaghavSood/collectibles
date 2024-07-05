@@ -155,7 +155,7 @@ func (d *SqliteBackend) seedItems() error {
 		}
 	}
 
-	_, err = tx.Exec(`INSERT INTO items (sku, series_slug, serial) SELECT sku, series_slug, serial FROM items_temp WHERE sku NOT IN (SELECT sku FROM items)`)
+	_, err = tx.Exec(`INSERT INTO items (sku, series_slug, serial) SELECT sku, series_slug, serial FROM items_temp WHERE 1 ON CONFLICT (sku) DO UPDATE SET series_slug=excluded.series_slug, serial=excluded.serial`)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("failed to insert items: %w", err)
