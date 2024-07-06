@@ -74,7 +74,7 @@
     const modal = document.querySelector('#modal');
     const searchBar = document.querySelector('#default-search');
     modal.classList.toggle('hidden');
-    var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 500 });
+    var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
     function onScanSuccess(decodedText, decodedResult) {
       // Handle on success condition with the decoded text or result.
       console.log(`Scan result: ${decodedText}`, decodedResult);
