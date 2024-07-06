@@ -146,9 +146,9 @@ func feedItems(txs []types.Transaction) []*feeds.Item {
 		var description string
 		usdValue := fmt.Sprintf("%.2f", util.BTCValueToUSD(tx.Value))
 		if tx.TransactionType == "incoming" {
-			description = fmt.Sprintf("Received %s BTC (%s USD)", tx.Value.SatoshisToBTC(true), util.FormatNumber(usdValue))
+			description = fmt.Sprintf("Received %s BTC (%s USD) on %s UTC", tx.Value.SatoshisToBTC(true), util.FormatNumber(usdValue), tx.BlockTime.Format("2006-01-02 15:04:05"))
 		} else {
-			description = fmt.Sprintf("Sent %s BTC (%s USD)", tx.Value.SatoshisToBTC(true), util.FormatNumber(usdValue))
+			description = fmt.Sprintf("Sent %s BTC (%s USD) on %s UTC", tx.Value.SatoshisToBTC(true), util.FormatNumber(usdValue), tx.BlockTime.Format("2006-01-02 15:04:05"))
 		}
 		item := &feeds.Item{
 			Title:       title,
