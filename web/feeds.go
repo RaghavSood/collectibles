@@ -117,7 +117,7 @@ func (s *Server) feedAll(c *gin.Context) {
 	now := time.Now()
 	feed := &feeds.Feed{
 		Title:       "Collectible - Recent Transactions",
-		Link:        &feeds.Link{Href: "https://collectible.money"},
+		Link:        &feeds.Link{Href: "https://collectible.money/"},
 		Description: "Recent transactions involving Bitcoin and other crypto collectibles",
 		Author:      &feeds.Author{Name: "Collectible", Email: "hello@collectible.money"},
 		Created:     now,
@@ -152,6 +152,7 @@ func feedItems(txs []types.Transaction) []*feeds.Item {
 		}
 		item := &feeds.Item{
 			Title:       title,
+			Id:          fmt.Sprintf("%s:%s", tx.SKU, tx.Outpoint()),
 			Link:        &feeds.Link{Href: fmt.Sprintf("https://collectible.money/item/%s", tx.SKU)},
 			Description: description,
 			Author:      &feeds.Author{Name: "Collectible", Email: "hello@collectible.money"},
