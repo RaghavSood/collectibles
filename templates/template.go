@@ -25,6 +25,7 @@ func New() *Template {
 		"FormatNumber":      util.FormatNumber,
 		"MultiParam":        util.MultiParam,
 		"ItemPercentString": util.ItemPercentString,
+		"ShortUTCTime":      util.ShortUTCTime,
 	}
 
 	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl", "masterlist_table.tmpl"))

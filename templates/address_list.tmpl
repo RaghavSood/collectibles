@@ -24,14 +24,14 @@
           {{ if .FirstActive.IsZero }}
             -
           {{ else }}
-            {{ .FirstActive.UTC }}
+            {{ ShortUTCTime .FirstActive }} UTC
           {{ end }}
         </td>
         <td class="text-start px-4 py-2 border-b border-orange-700">
           {{ if .RedeemedOn.IsZero }}
             -
           {{ else }}
-            {{ .RedeemedOn.UTC }}
+            {{ ShortUTCTime .RedeemedOn }} UTC
           {{ end }}
         </td>
         <td class="text-start px-4 py-2 border-b border-orange-700">{{ .TotalValue.SatoshisToBTC true }} BTC</td>

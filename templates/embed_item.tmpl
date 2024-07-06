@@ -32,14 +32,14 @@
             {{ if .FirstActive.IsZero }}
               -
             {{ else }}
-              Funded: {{ .FirstActive.UTC }}
+              Funded: {{ ShortUTCTime .FirstActive }} UTC
             {{ end }}
           </p>
           <p class="text-xs text-red-700">
             {{ if .RedeemedOn.IsZero }}
               -
             {{ else }}
-              Redeemed: {{ .RedeemedOn.UTC }}
+              Redeemed: {{ ShortUTCTime .RedeemedOn }} UTC
             {{ end }}
           </p>
         {{ end }}

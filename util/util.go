@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"strings"
+	"time"
 
 	"github.com/RaghavSood/collectibles/prices"
 	"github.com/RaghavSood/collectibles/types"
@@ -58,4 +59,8 @@ func ItemPercentString(count, total int) string {
 
 	percentage := float64(count) / float64(total) * 100
 	return fmt.Sprintf("%.2f%%", percentage)
+}
+
+func ShortUTCTime(t time.Time) string {
+	return t.UTC().Format("2006-01-02 15:04:05")
 }
