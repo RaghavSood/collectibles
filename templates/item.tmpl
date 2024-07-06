@@ -17,6 +17,9 @@
         <a class="hover:text-slate-500 clipboard" data-clipboard-text="[url=https://collectible.money/item/{{ .Item.SKU }}][img]https://collectible.money/snapshot/item/{{ .Item.SKU }}[/img][/url]">
           Copy BBCode
         </a>
+        <a class="hover:text-slate-500" href="/feeds/item/{{ .Item.SKU }}">
+          ATOM Feed
+        </a>
       </div>
     </div>
     {{ template "address_list" (MultiParam .Addresses false) }}
