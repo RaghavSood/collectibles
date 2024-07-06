@@ -16,6 +16,8 @@ type Transaction struct {
 	TransactionType string    `json:"transaction_type"`
 	SKU             string    `json:"sku"`
 	SeriesSlug      string    `json:"series_slug"`
+	Serial          string    `json:"serial"`
+	SeriesName      string    `json:"series_name"`
 }
 
 func (t *Transaction) Outpoint() string {

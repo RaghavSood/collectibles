@@ -34,7 +34,9 @@ type Storage interface {
 	ItemSummary(sku string) (*types.ItemSummary, error)
 
 	TransactionSummariesByItem(sku string) ([]types.Transaction, error)
-	TransactionSummariesBySeries(seriesSlug string) ([]types.Transaction, error)
+	TransactionSummariesBySeries(seriesSlug string, limit int) ([]types.Transaction, error)
+	TransactionSummariesByCreator(creatorSlug string, limit int) ([]types.Transaction, error)
+	TransactionSummaries(limit int) ([]types.Transaction, error)
 
 	AddressSummariesByItem(sku string) ([]types.AddressSummary, error)
 	AddressSummariesBySeries(seriesSlug string) ([]types.AddressSummary, error)

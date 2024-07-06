@@ -63,6 +63,14 @@ func (s *Server) Serve() {
 		embeds.GET("/item/:sku", s.embedItem)
 	}
 
+	feeds := router.Group("/feeds")
+	{
+		feeds.GET("/creator/:creator", s.feedCreator)
+		feeds.GET("/series/:series", s.feedSeries)
+		feeds.GET("/item/:item", s.feedItem)
+		feeds.GET("/all", s.feedAll)
+	}
+
 	router.StaticFS("/static", http.FS(static.Static))
 	// Serve /favicon.ico and /robots.txt from the root
 	router.GET("/favicon.ico", func(c *gin.Context) {
