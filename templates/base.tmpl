@@ -40,6 +40,7 @@
     {{ block "content" . }}{{ end }}
   </main>
   {{ template "footer" . }}
+  <script src="/static/html5-qrcode.min.js"></script>
   <script src="/static/clipboard.min.js"></script>
   <script>
     var clipboard = new ClipboardJS('.clipboard');
