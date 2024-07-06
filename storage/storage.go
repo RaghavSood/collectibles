@@ -45,4 +45,7 @@ type Storage interface {
 	Search(query string) ([]types.GodView, error)
 	RecentRedemptions(limit int) ([]types.GodView, error)
 	UpdateGodView() (string, error)
+
+	KvGetBlockHeight() (int64, error)
+	KvSetBlockHeight(height int64) error
 }

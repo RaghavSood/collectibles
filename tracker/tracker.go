@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"time"
 
@@ -54,7 +55,7 @@ func (t *Tracker) Run() {
 		log.Info().Int("count", len(scripts)).Msg("Scripts loaded")
 	}
 
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
 
 	dbDumpTicker := time.NewTicker(15 * time.Minute)
@@ -101,8 +102,62 @@ func (t *Tracker) Run() {
 
 			t.processScriptQueue()
 			t.processTransactionQueue()
+
+			lastBlock, err := t.db.KvGetBlockHeight()
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to get last block height")
+				continue
+			}
+
+			// We limit ourselves to batch processing 50 blocks at a time
+			// so that other indexing jobs also run often enough
+			target := min(lastBlock+1+10, info.Blocks)
+			for i := lastBlock + 1; i <= target; i++ {
+				err = t.processBlock(i)
+				if err != nil {
+					log.Error().Err(err).Int64("block_height", i).Msg("Failed to process block")
+					break
+				}
+			}
+
 		}
 	}
+}
+
+func (t *Tracker) processBlock(height int64) error {
+	log.Info().Int64("block_height", height).Msg("Processing block")
+	start := time.Now()
+
+	hash, err := t.client.GetBlockHash(height)
+	if err != nil {
+		return fmt.Errorf("failed to get block hash: %w", err)
+	}
+
+	block, err := t.client.GetBlock(hash)
+	if err != nil {
+		return fmt.Errorf("failed to get block: %w", err)
+	}
+
+	outpoints, spentTxids, spentVouts, spendingTxids, spendingVins := t.scanTransactions(block.Height, block.Time, block.Tx, "bitcoin")
+	err = t.db.RecordTransactionEffects(outpoints, spentTxids, spentVouts, spendingTxids, spendingVins, block.Height, block.Time)
+	if err != nil {
+		log.Error().Err(err).
+			Int64("block_height", height).
+			Msg("Failed to record transaction effects")
+		return fmt.Errorf("failed to record transaction effects: %w", err)
+	}
+
+	err = t.db.KvSetBlockHeight(height)
+	if err != nil {
+		return fmt.Errorf("failed to set block height: %w", err)
+	}
+
+	log.Info().
+		Int64("block_height", height).
+		Stringer("duration", time.Since(start)).
+		Msg("Block processed")
+
+	return nil
 }
 
 func (t *Tracker) processTransactionQueue() {
@@ -241,15 +296,23 @@ func (t *Tracker) scanTransactions(blockHeight int64, blockTime int, txs []btype
 		for _, vout := range tx.Vout {
 			script := vout.ScriptPubKey.Hex
 			if t.bf.TestString(script) {
-				outpoints = append(outpoints, types.Outpoint{
-					Txid:        tx.Txid,
-					Vout:        vout.N,
-					Script:      script,
-					Value:       types.FromBTCString(types.BTCString(vout.Value)),
-					BlockHeight: blockHeight,
-					BlockTime:   time.Unix(int64(blockTime), 0),
-					Chain:       chain,
-				})
+				exists, err := t.db.ScriptExists(script, chain)
+				if err != nil {
+					log.Error().Err(err).Str("script", script).Msg("Failed to check if script exists")
+					continue
+				}
+
+				if exists {
+					outpoints = append(outpoints, types.Outpoint{
+						Txid:        tx.Txid,
+						Vout:        vout.N,
+						Script:      script,
+						Value:       types.FromBTCString(types.BTCString(vout.Value)),
+						BlockHeight: blockHeight,
+						BlockTime:   time.Unix(int64(blockTime), 0),
+						Chain:       chain,
+					})
+				}
 			}
 		}
 	}
