@@ -35,12 +35,12 @@
   </script>
 </head>
 <body class="bg-orange-400 flex flex-col min-h-screen font-mono">
+  <script src="/static/html5-qrcode.min.js"></script>
   {{ template "header" . }}
   <main>
     {{ block "content" . }}{{ end }}
   </main>
   {{ template "footer" . }}
-  <script src="/static/html5-qrcode.min.js"></script>
   <script src="/static/clipboard.min.js"></script>
   <script>
     var clipboard = new ClipboardJS('.clipboard');

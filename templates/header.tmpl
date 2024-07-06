@@ -10,6 +10,8 @@
 <div id="modal" class="fixed inset-0 bg-gray-800 bg-opacity-50 z-50 hidden flex items-center justify-center">
   <div id="reader" class="bg-white w-full h-full lg:w-1/2 lg:h-1/2 lg:max-w-screen-lg lg:max-h-screen-lg rounded-lg shadow-lg">
   </div>
+  <!-- Close button -->
+  <button class="absolute top-4 right-4 text-white bg-red-500 hover:bg-red-600 focus:outline-none font-medium rounded-lg text-sm px-4 py-2" onclick="closeQR()">Close</button>
 </div>
 
 <header class="bg-white text-black">
@@ -69,12 +71,18 @@
 </div>
 
 <script>
+  var html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+    fps: 10, 
+    qrbox: 250,
+    rememberLastUsedCamera: true,
+    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+  });
+
   function scanQR() {
     const reader = document.querySelector('#reader');
     const modal = document.querySelector('#modal');
     const searchBar = document.querySelector('#default-search');
     modal.classList.toggle('hidden');
-    var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
     function onScanSuccess(decodedText, decodedResult) {
       // Handle on success condition with the decoded text or result.
       console.log(`Scan result: ${decodedText}`, decodedResult);
@@ -84,6 +92,12 @@
     }
   
     html5QrcodeScanner.render(onScanSuccess);
+  }
+
+  function closeQR() {
+    const modal = document.querySelector('#modal');
+    modal.classList.toggle('hidden');
+    html5QrcodeScanner.clear();
   }
 </script>
 
