@@ -10,7 +10,7 @@ type BloomFilter struct {
 
 func NewBloomFilter() *BloomFilter {
 	return &BloomFilter{
-		filter: bloom.NewWithEstimates(50000, 0.01),
+		filter: bloom.NewWithEstimates(75000, 0.01),
 	}
 }
 
