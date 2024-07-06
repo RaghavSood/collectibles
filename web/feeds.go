@@ -152,7 +152,6 @@ func feedItems(txs []types.Transaction) []*feeds.Item {
 		}
 		item := &feeds.Item{
 			Title:       title,
-			Id:          fmt.Sprintf("%s:%s", tx.SKU, tx.Outpoint()),
 			Link:        &feeds.Link{Href: fmt.Sprintf("https://collectible.money/item/%s", tx.SKU)},
 			Description: description,
 			Author:      &feeds.Author{Name: "Collectible", Email: "hello@collectible.money"},
