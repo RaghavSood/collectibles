@@ -9,6 +9,7 @@ type Storage interface {
 	GetSeries() ([]types.Series, error)
 
 	GetItems() ([]types.Item, error)
+	GetItemPage(pageSize, offset int) ([]types.Item, error)
 
 	GetOnlyScripts(chain string) ([]string, error)
 	ScriptExists(script, chain string) (bool, error)

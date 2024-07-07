@@ -16,6 +16,16 @@ func (d *SqliteBackend) GetItems() ([]types.Item, error) {
 	return scanItems(rows)
 }
 
+func (d *SqliteBackend) GetItemPage(pageSize, offset int) ([]types.Item, error) {
+	rows, err := d.db.Query("SELECT sku, series_slug, serial, created_at FROM items ORDER BY created_at ASC LIMIT ? OFFSET ?", pageSize, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanItems(rows)
+}
+
 func scanItems(rows *sql.Rows) ([]types.Item, error) {
 	var items []types.Item
 	for rows.Next() {

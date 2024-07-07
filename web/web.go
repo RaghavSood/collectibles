@@ -85,6 +85,9 @@ func (s *Server) Serve() {
 	{
 		sitemap.GET("/creators.xml", s.sitemapCreators)
 		sitemap.GET("/series.xml", s.sitemapSeries)
+
+		sitemap.GET("/index/items.xml", s.sitemapItemIndex)
+		sitemap.GET("/items/:index", s.sitemapItems)
 	}
 
 	port := os.Getenv("COLLECTIBLES_PORT")
