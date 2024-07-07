@@ -3,6 +3,7 @@ module github.com/RaghavSood/collectibles
 go 1.22.3
 
 require (
+	github.com/RaghavSood/btcsupply v0.0.0-20240625152245-ae82b828ae4f
 	github.com/RaghavSood/ogimage v0.0.0-20240626141952-ce97471f4955
 	github.com/aws/aws-sdk-go-v2 v1.30.1
 	github.com/aws/aws-sdk-go-v2/config v1.27.23

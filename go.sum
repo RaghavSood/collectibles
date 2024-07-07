@@ -1,3 +1,5 @@
+github.com/RaghavSood/btcsupply v0.0.0-20240625152245-ae82b828ae4f h1:lgdHtv6cIaR8wUMkXI+TAFCi5DUN5h4+5pQcvszGYKI=
+github.com/RaghavSood/btcsupply v0.0.0-20240625152245-ae82b828ae4f/go.mod h1:rPgeVLwccCjBwJjYIDiX4AhnB2IHrxkzP0TG4NwHEc4=
 github.com/RaghavSood/ogimage v0.0.0-20240626141952-ce97471f4955 h1:HE6kgvk2qttV7ATpw0gJHa5lsQZaLgWOdLs0IH7Som0=
 github.com/RaghavSood/ogimage v0.0.0-20240626141952-ce97471f4955/go.mod h1:BvkAHaDdzbD5hkHhchSS5MEGdqNenHrDZpkGkYu4jMk=
 github.com/aead/siphash v1.0.1/go.mod h1:Nywa3cDsYNNK3gaciGTWPwHt0wlpNV15vwmswBAUSII=

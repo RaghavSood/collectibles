@@ -51,7 +51,7 @@
               name = "collectibles";
 
               src = ./.;
-              vendorHash = "sha256-rsr35h5oZ2dWMF055nazdL23FkhbGa6Y3xGuWTNAtDI=";
+              vendorHash = "sha256-M+cYgaJCCipkHlSIFrWeuqn8fyWZcdHmHirjrZQ4bH0=";
 
               subPackages = [ "cmd/collectibles" ];
 
