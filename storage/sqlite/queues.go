@@ -6,6 +6,16 @@ import (
 	"github.com/RaghavSood/collectibles/types"
 )
 
+func (d *SqliteBackend) GetQueueStats() (int, int, error) {
+	var scriptCount, transactionCount int
+	err := d.db.QueryRow(`SELECT (SELECT COUNT(*) FROM script_queue), (SELECT COUNT(*) FROM transaction_queue)`).Scan(&scriptCount, &transactionCount)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return scriptCount, transactionCount, nil
+}
+
 func (d *SqliteBackend) QueueNewScripts(_ int64) error {
 	_, err := d.db.Exec(`INSERT INTO script_queue (script, chain) SELECT script, chain FROM addresses WHERE fast_block_height = 0 ON CONFLICT DO NOTHING`)
 	return err

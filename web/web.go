@@ -12,6 +12,7 @@ import (
 	"github.com/RaghavSood/collectibles/templates"
 	"github.com/gin-gonic/gin"
 	"github.com/hashicorp/golang-lru/v2/expirable"
+	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
@@ -130,8 +131,20 @@ func (s *Server) renderNonBaseTemplate(c *gin.Context, newBase, template string,
 }
 
 func (s *Server) renderTemplate(c *gin.Context, template string, params map[string]interface{}) {
+	importOngoing := false
+	sQueueLen, txQueueLen, err := s.db.GetQueueStats()
+	if err != nil {
+		log.Warn().Err(err).Msg("Failed to get queue stats")
+	}
+
+	if sQueueLen > 0 || txQueueLen > 0 {
+		importOngoing = true
+	}
+
+	params["ImportOngoing"] = importOngoing
+
 	tmpl := templates.New()
-	err := tmpl.Render(c.Writer, template, params)
+	err = tmpl.Render(c.Writer, template, params)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

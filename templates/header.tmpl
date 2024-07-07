@@ -1,8 +1,8 @@
 {{ define "header" }}
 <!-- Show maintenance banner if site is in read only mode -->
-{{ if .Readonly }}
-<div class="bg-red-500 text-white text-center p-2">
-    <p class="text-sm">Maintenance ongoing. Block data may not be up to date.</p>
+{{ if .ImportOngoing }}
+<div class="bg-blue-500 text-white text-center p-2">
+    <p class="text-sm">Collection import in progress. Real-time block data may not be up to date.</p>
 </div>
 {{ end }}
 

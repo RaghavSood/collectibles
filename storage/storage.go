@@ -20,6 +20,7 @@ type Storage interface {
 	IncrementScriptQueueTryCount(script, chain string) error
 	RecordScriptUnspents(script types.ScriptQueue, unspentTxids []string, unspentHeights []int64) error
 	MarkScriptFastIndex(script, chain string, fastBlockHeight int64) error
+	GetQueueStats() (int, int, error)
 
 	RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error
 
