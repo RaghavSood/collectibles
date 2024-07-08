@@ -219,6 +219,7 @@ func (t *Tracker) processScriptQueue() {
 
 	for _, script := range scripts {
 		if script.Script == "" {
+			err = t.db.MarkScriptFastIndex(script.Script, script.Chain, 1)
 			continue
 		}
 
