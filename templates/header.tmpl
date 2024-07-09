@@ -2,7 +2,7 @@
 <!-- Show maintenance banner if site is in read only mode -->
 {{ if .ImportOngoing }}
 <div class="bg-blue-500 text-white text-center p-2">
-    <p class="text-sm">Collection import in progress. Real-time block data may not be up to date.</p>
+  <p class="text-sm">Collection import in progress. Real-time block data may not be up to date. | {{ .ScriptQueueLen }} addresses, {{ .TxQueueLen }} transactions pending.</p>
 </div>
 {{ end }}
 

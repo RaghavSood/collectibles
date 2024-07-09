@@ -142,6 +142,8 @@ func (s *Server) renderTemplate(c *gin.Context, template string, params map[stri
 	}
 
 	params["ImportOngoing"] = importOngoing
+	params["ScriptQueueLen"] = sQueueLen
+	params["TxQueueLen"] = txQueueLen
 
 	tmpl := templates.New()
 	err = tmpl.Render(c.Writer, template, params)
