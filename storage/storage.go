@@ -43,6 +43,8 @@ type Storage interface {
 	AddressSummariesByItem(sku string) ([]types.AddressSummary, error)
 	AddressSummariesBySeries(seriesSlug string) ([]types.AddressSummary, error)
 
+	ItemAddressSummariesBySeries(seriesSlug string) ([]types.ItemAddressSummary, error)
+
 	GeneralStatistics() (*types.GeneralStatistics, error)
 
 	GodView() ([]types.GodView, error)

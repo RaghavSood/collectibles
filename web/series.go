@@ -30,13 +30,7 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		return
 	}
 
-	items, err := s.db.ItemSummariesBySeries(slug)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	addresses, err := s.db.AddressSummariesBySeries(slug)
+	itemSummaries, err := s.db.ItemAddressSummariesBySeries(slug)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -50,11 +44,10 @@ func (s *Server) seriesDetail(c *gin.Context) {
 	notes := notes.ReadNotes([]notes.NotePointer{notePointer})
 
 	s.renderTemplate(c, "series_detail.tmpl", map[string]interface{}{
-		"Title":     series.Name,
-		"Desc":      fmt.Sprintf("%s has %d items worth %s BTC (%s USD)", series.Name, series.ItemCount, series.TotalValue.SatoshisToBTC(true), util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(series.TotalValue)))),
-		"Series":    series,
-		"Items":     items,
-		"Notes":     notes,
-		"Addresses": addresses,
+		"Title":         series.Name,
+		"Desc":          fmt.Sprintf("%s has %d items worth %s BTC (%s USD)", series.Name, series.ItemCount, series.TotalValue.SatoshisToBTC(true), util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(series.TotalValue)))),
+		"Series":        series,
+		"Notes":         notes,
+		"ItemSummaries": itemSummaries,
 	})
 }
