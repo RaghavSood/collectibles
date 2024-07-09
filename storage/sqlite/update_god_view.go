@@ -32,7 +32,8 @@ func (d *SqliteBackend) UpdateGodView() (string, error) {
 										  address TEXT,
 										  total_value INTEGER,
 										  first_active DATETIME,
-										  redeemed_on DATETIME
+										  redeemed_on DATETIME,
+											balance INTEGER
 										);`)
 	if err != nil {
 		tx.Rollback()
@@ -54,6 +55,7 @@ func (d *SqliteBackend) UpdateGodView() (string, error) {
 		CREATE INDEX goddb.god_view_total_value ON god_view(total_value);
 		CREATE INDEX goddb.god_view_first_active ON god_view(first_active);
 		CREATE INDEX goddb.god_view_redeemed_on ON god_view(redeemed_on);
+		CREATE INDEX goddb.god_view_balance ON god_view(balance);
 	`)
 	if err != nil {
 		tx.Rollback()
