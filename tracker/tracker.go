@@ -118,8 +118,12 @@ func (t *Tracker) Run() {
 					log.Error().Err(err).Int64("block_height", i).Msg("Failed to process block")
 					break
 				}
-			}
 
+				err = t.db.QueueBlockNotification(i, "bitcoin")
+				if err != nil {
+					log.Warn().Err(err).Int64("block_height", i).Msg("Failed to queue block notification")
+				}
+			}
 		}
 	}
 }

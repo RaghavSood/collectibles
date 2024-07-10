@@ -82,6 +82,11 @@ func (d *SqliteBackend) RecordScriptUnspents(script types.ScriptQueue, unspentTx
 	return tx.Commit()
 }
 
+func (d *SqliteBackend) QueueBlockNotification(height int64, chain string) error {
+	_, err := d.db.Exec(`INSERT INTO block_notification_queue (block_height, chain) VALUES (?, ?)`, height, chain)
+	return err
+}
+
 func scanScriptQueue(rows *sql.Rows) ([]types.ScriptQueue, error) {
 	var scripts []types.ScriptQueue
 	for rows.Next() {
