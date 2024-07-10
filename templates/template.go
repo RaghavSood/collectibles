@@ -28,7 +28,7 @@ func New() *Template {
 		"ShortUTCTime":      util.ShortUTCTime,
 	}
 
-	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl", "masterlist_table.tmpl"))
+	templates := template.Must(template.New("").Funcs(funcMap).ParseFS(Templates, "footer.tmpl", "base.tmpl", "header.tmpl", "series_card.tmpl", "notes.tmpl", "address_list.tmpl", "embed_base.tmpl", "masterlist_table.tmpl", "flag_panel.tmpl"))
 	return &Template{
 		templates: templates,
 	}

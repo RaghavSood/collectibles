@@ -64,4 +64,6 @@ type Storage interface {
 
 	KvGetBlockHeight() (int64, error)
 	KvSetBlockHeight(height int64) error
+
+	GetFlags(scope string, key string) ([]types.Flag, error)
 }

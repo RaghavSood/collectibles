@@ -1,0 +1,10 @@
+{{ define "flag_panel" }}
+<div class="text-pretty border rounded-lg border-red-900 bg-red-800 p-4 mb-4 text-white">
+  <h2 class="text-lg font-semibold">Alert!</h2>
+  {{ range . }}
+    {{ if eq .FlagType "scam" }}
+      <p class="text-sm">This is known to be a scam or exhibit scam-like qualities. Trade, authenticate, and hold with extreme caution.</p>
+    {{ end }}
+  {{ end }}
+</div>
+{{ end }}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/RaghavSood/collectibles/notes"
+	"github.com/RaghavSood/collectibles/types"
 	"github.com/RaghavSood/collectibles/util"
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +38,12 @@ func (s *Server) creator(c *gin.Context) {
 		return
 	}
 
+	flags, err := s.db.GetFlags(types.FLAG_SCOPE_CREATORS, creator.Slug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	notePointer := notes.NotePointer{
 		NoteType:     notes.Creator,
 		PathElements: []string{creator.Slug},
@@ -50,5 +57,6 @@ func (s *Server) creator(c *gin.Context) {
 		"Creator": creator,
 		"Series":  series,
 		"Notes":   notes,
+		"Flags":   flags,
 	})
 }
