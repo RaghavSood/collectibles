@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/RaghavSood/collectibles/types"
 )
@@ -82,8 +83,33 @@ func (d *SqliteBackend) RecordScriptUnspents(script types.ScriptQueue, unspentTx
 	return tx.Commit()
 }
 
-func (d *SqliteBackend) QueueBlockNotification(height int64, chain string) error {
-	_, err := d.db.Exec(`INSERT INTO block_notification_queue (block_height, chain) VALUES (?, ?)`, height, chain)
+func (d *SqliteBackend) QueueBlockNotification(height int64, blockTime time.Time, chain string) error {
+	_, err := d.db.Exec(`INSERT INTO block_notification_queue (block_height, block_time, chain) VALUES (?, ?, ?) ON CONFLICT DO NOTHING`, height, blockTime, chain)
+	return err
+}
+
+func (d *SqliteBackend) GetBlockNotificationQueue() ([]types.BlockNotificationQueue, error) {
+	rows, err := d.db.Query(`SELECT block_height, block_time, chain FROM block_notification_queue ORDER BY block_height ASC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var blocks []types.BlockNotificationQueue
+	for rows.Next() {
+		var block types.BlockNotificationQueue
+		err := rows.Scan(&block.BlockHeight, &block.BlockTime, &block.Chain)
+		if err != nil {
+			return nil, err
+		}
+		blocks = append(blocks, block)
+	}
+
+	return blocks, nil
+}
+
+func (d *SqliteBackend) MarkBlockNotificationProcessed(height int64, chain string) error {
+	_, err := d.db.Exec(`DELETE FROM block_notification_queue WHERE block_height = ? AND chain = ?`, height, chain)
 	return err
 }
 

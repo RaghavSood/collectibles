@@ -12,7 +12,9 @@ import (
 	"github.com/RaghavSood/collectibles/clogger"
 	"github.com/RaghavSood/collectibles/electrum"
 	"github.com/RaghavSood/collectibles/storage"
+	"github.com/RaghavSood/collectibles/tgbot"
 	"github.com/RaghavSood/collectibles/types"
+	"github.com/RaghavSood/collectibles/util"
 )
 
 var log = clogger.NewLogger("tracker")
@@ -22,6 +24,7 @@ type Tracker struct {
 	client  *bitcoinrpc.RpcClient
 	bf      *bloomfilter.BloomFilter
 	eclient *electrum.Electrum
+	telebot *tgbot.TgBot
 }
 
 func NewTracker(db storage.Storage) *Tracker {
@@ -30,11 +33,17 @@ func NewTracker(db storage.Storage) *Tracker {
 		log.Fatal().Err(err).Msg("Failed to connect to electrum server")
 	}
 
+	telebot, err := tgbot.NewBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHANNEL_USERNAME"))
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to connect to telegram bot")
+	}
+
 	return &Tracker{
 		db:      db,
 		client:  bitcoinrpc.NewRpcClient(os.Getenv("BITCOIND_HOST"), os.Getenv("BITCOIND_USER"), os.Getenv("BITCOIND_PASS")),
 		bf:      bloomfilter.NewBloomFilter(),
 		eclient: eclient,
+		telebot: telebot,
 	}
 }
 
@@ -113,33 +122,96 @@ func (t *Tracker) Run() {
 			// so that other indexing jobs also run often enough
 			target := min(lastBlock+1+10, info.Blocks)
 			for i := lastBlock + 1; i <= target; i++ {
-				err = t.processBlock(i)
+				blockTime, err := t.processBlock(i)
 				if err != nil {
 					log.Error().Err(err).Int64("block_height", i).Msg("Failed to process block")
 					break
 				}
 
-				err = t.db.QueueBlockNotification(i, "bitcoin")
+				err = t.db.QueueBlockNotification(i, blockTime, "bitcoin")
 				if err != nil {
 					log.Warn().Err(err).Int64("block_height", i).Msg("Failed to queue block notification")
 				}
 			}
+
+			t.processBlockNotificationQueue()
 		}
 	}
 }
 
-func (t *Tracker) processBlock(height int64) error {
+func (t *Tracker) processBlockNotificationQueue() {
+	queuedBlocks, err := t.db.GetBlockNotificationQueue()
+	if err == sql.ErrNoRows {
+		log.Info().Msg("No blocks in queue")
+		return
+	}
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get blocks from queue")
+		return
+	}
+
+	for _, block := range queuedBlocks {
+		log.Info().
+			Int64("block_height", block.BlockHeight).
+			Str("chain", block.Chain).
+			Msg("Processing block notification")
+		items, err := t.db.RedemptionsByRedeemedOn(block.BlockTime)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get item address summary")
+			return
+		}
+
+		for _, item := range items {
+			log.Info().
+				Str("item", item.ItemID).
+				Msg("Sending notification")
+
+			start := "An item"
+			if item.Serial == nil || *item.Serial == "" {
+				start = fmt.Sprintf("Item `%s`", tgbot.EscapeText(*item.Serial))
+			}
+
+			message := fmt.Sprintf("%s from series `%s` has been redeemed on %s UTC, worth `%s BTC` \\(%s USD\\)\\.\n\nFirst funded on %s UTC, this item held it's value for *%s*\\.\n\n[View details](https://collectible.money/item/%s)",
+				start,
+				tgbot.EscapeText(item.SeriesName),
+				tgbot.EscapeText(util.ShortUTCTime(item.RedeemedOn)),
+				tgbot.EscapeText(item.TotalValue.SatoshisToBTC(true)),
+				tgbot.EscapeText(util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(item.TotalValue)))),
+				tgbot.EscapeText(util.ShortUTCTime(item.FirstActive)),
+				tgbot.EscapeText(util.LifespanString(item.FirstActive, item.RedeemedOn)),
+				tgbot.EscapeText(item.ItemID),
+			)
+			err = t.telebot.SendMessage(message)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to send telegram message")
+			}
+		}
+
+		err = t.db.MarkBlockNotificationProcessed(block.BlockHeight, block.Chain)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to mark block notification processed")
+			return
+		}
+
+		log.Info().
+			Int64("block_height", block.BlockHeight).
+			Str("chain", block.Chain).
+			Msg("Block notification processed")
+	}
+}
+
+func (t *Tracker) processBlock(height int64) (time.Time, error) {
 	log.Info().Int64("block_height", height).Msg("Processing block")
 	start := time.Now()
 
 	hash, err := t.client.GetBlockHash(height)
 	if err != nil {
-		return fmt.Errorf("failed to get block hash: %w", err)
+		return time.Time{}, fmt.Errorf("failed to get block hash: %w", err)
 	}
 
 	block, err := t.client.GetBlock(hash)
 	if err != nil {
-		return fmt.Errorf("failed to get block: %w", err)
+		return time.Time{}, fmt.Errorf("failed to get block: %w", err)
 	}
 
 	outpoints, spentTxids, spentVouts, spendingTxids, spendingVins := t.scanTransactions(block.Height, block.Time, block.Tx, "bitcoin")
@@ -148,12 +220,12 @@ func (t *Tracker) processBlock(height int64) error {
 		log.Error().Err(err).
 			Int64("block_height", height).
 			Msg("Failed to record transaction effects")
-		return fmt.Errorf("failed to record transaction effects: %w", err)
+		return time.Time{}, fmt.Errorf("failed to record transaction effects: %w", err)
 	}
 
 	err = t.db.KvSetBlockHeight(height)
 	if err != nil {
-		return fmt.Errorf("failed to set block height: %w", err)
+		return time.Time{}, fmt.Errorf("failed to set block height: %w", err)
 	}
 
 	log.Info().
@@ -161,7 +233,7 @@ func (t *Tracker) processBlock(height int64) error {
 		Stringer("duration", time.Since(start)).
 		Msg("Block processed")
 
-	return nil
+	return time.Unix(int64(block.Time), 0), nil
 }
 
 func (t *Tracker) processTransactionQueue() {

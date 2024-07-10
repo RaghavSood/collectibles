@@ -53,6 +53,21 @@ func (d *SqliteBackend) RecentRedemptions(limit int) ([]types.GodView, error) {
 	return scanGodView(rows)
 }
 
+func (d *SqliteBackend) RedemptionsByRedeemedOn(redeemedOn time.Time) ([]types.GodView, error) {
+	rows, err := d.db.Query(`
+		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
+		FROM god_view
+		WHERE redeemed_on = $1
+		ORDER BY series_id, item_id, serial;
+	`, redeemedOn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query god view: %w", err)
+	}
+	defer rows.Close()
+
+	return scanGodView(rows)
+}
+
 func scanGodView(rows *sql.Rows) ([]types.GodView, error) {
 	var godView []types.GodView
 	for rows.Next() {

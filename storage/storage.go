@@ -1,6 +1,10 @@
 package storage
 
-import "github.com/RaghavSood/collectibles/types"
+import (
+	"time"
+
+	"github.com/RaghavSood/collectibles/types"
+)
 
 type Storage interface {
 	GetCreators() ([]types.Creator, error)
@@ -24,7 +28,8 @@ type Storage interface {
 
 	RecordTransactionEffects(outpoints []types.Outpoint, spentTxids []string, spentVins []int, spendingTxids []string, spendingVins []int, blockHeight int64, blockTime int) error
 
-	QueueBlockNotification(height int64, chain string) error
+	QueueBlockNotification(height int64, blockTime time.Time, chain string) error
+	GetBlockNotificationQueue() ([]types.BlockNotificationQueue, error)
 
 	CreatorSummaries() ([]types.CreatorSummary, error)
 	CreatorSummary(creatorSlug string) (*types.CreatorSummary, error)
@@ -46,12 +51,15 @@ type Storage interface {
 	AddressSummariesBySeries(seriesSlug string) ([]types.AddressSummary, error)
 
 	ItemAddressSummariesBySeries(seriesSlug string) ([]types.ItemAddressSummary, error)
+	ItemAddressSummariesByRedeemedOn(redeemedOn time.Time) ([]types.ItemAddressSummary, error)
+	MarkBlockNotificationProcessed(height int64, chain string) error
 
 	GeneralStatistics() (*types.GeneralStatistics, error)
 
 	GodView() ([]types.GodView, error)
 	Search(query string) ([]types.GodView, error)
 	RecentRedemptions(limit int) ([]types.GodView, error)
+	RedemptionsByRedeemedOn(redeemedOn time.Time) ([]types.GodView, error)
 	UpdateGodView() (string, error)
 
 	KvGetBlockHeight() (int64, error)

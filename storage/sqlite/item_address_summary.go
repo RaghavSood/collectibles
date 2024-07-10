@@ -19,6 +19,18 @@ func (d *SqliteBackend) ItemAddressSummariesBySeries(seriesSlug string) ([]types
 	return scanItemAddressSummary(rows)
 }
 
+func (d *SqliteBackend) ItemAddressSummariesByRedeemedOn(redeemedOn time.Time) ([]types.ItemAddressSummary, error) {
+	query := `SELECT sku, serial, addresses, first_active, redeemed_on, total_value, series_name, series_slug FROM item_address_summary_view WHERE redeemed_on = ?;`
+
+	rows, err := d.db.Query(query, redeemedOn)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanItemAddressSummary(rows)
+}
+
 func scanItemAddressSummary(rows *sql.Rows) ([]types.ItemAddressSummary, error) {
 	var ias []types.ItemAddressSummary
 	for rows.Next() {
