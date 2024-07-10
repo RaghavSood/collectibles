@@ -107,6 +107,10 @@ func (s *Server) index(c *gin.Context) {
 	}
 
 	recentRedemptions, err := s.db.RecentRedemptions(50)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	s.renderTemplate(c, "index.tmpl", map[string]interface{}{
 		"Title":             "Home",

@@ -8,7 +8,7 @@ type GodView struct {
 	Creators    string    `json:"creators"`
 	ItemID      string    `json:"item_id"`
 	Serial      *string   `json:"serial"`
-	Address     *string   `json:"address"`
+	Addresses   *string   `json:"address"`
 	TotalValue  *BigInt   `json:"total_value"`
 	FirstActive time.Time `json:"first_active"`
 	RedeemedOn  time.Time `json:"redeemed_on"`

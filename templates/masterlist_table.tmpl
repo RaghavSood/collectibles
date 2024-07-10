@@ -12,7 +12,7 @@
           <th>Creators</th>
           <th>Item ID</th>
           <th>Serial</th>
-          <th>Address</th>
+          <th>Addresses</th>
           <th>Value</th>
           <th>Funded At</th>
           <th>Redeemed At</th>
@@ -36,7 +36,7 @@
             <td class="px-2 py-1">{{ .Creators }}</td>
             <td class="px-2 py-1"><a class="underline decoration-dotted hover:underline hover:text-orange-400 hover:decoration-dotted" href="/item/{{ .ItemID}}">{{ .ItemID }}</a></td>
             <td class="px-2 py-1">{{ .Serial }}</td>
-            <td class="px-2 py-1">{{ .Address }}</td>
+            <td class="px-2 py-1">{{ .Addresses }}</td>
             <td class="px-2 py-1">{{ .TotalValue.SatoshisToBTC true }} BTC</td>
             <td class="px-2 py-1">
               {{ if .FirstActive.IsZero }}

@@ -10,7 +10,7 @@ import (
 
 func (d *SqliteBackend) GodView() ([]types.GodView, error) {
 	rows, err := d.db.Query(`
-		SELECT series_name, series_id, creators, item_id, serial, address, total_value, first_active, redeemed_on, balance
+		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
 		FROM god_view
 		ORDER BY series_id, item_id, serial;
 	`)
@@ -24,9 +24,9 @@ func (d *SqliteBackend) GodView() ([]types.GodView, error) {
 
 func (d *SqliteBackend) Search(query string) ([]types.GodView, error) {
 	rows, err := d.db.Query(`
-		SELECT series_name, series_id, creators, item_id, serial, address, total_value, first_active, redeemed_on, balance
+		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
 		FROM god_view
-		WHERE series_name LIKE '%' || $1 || '%' OR address LIKE '%' || $1 || '%' OR serial LIKE '%' || $1 || '%' OR creators LIKE '%' || $1 || '%'
+		WHERE series_name LIKE '%' || $1 || '%' OR addresses LIKE '%' || $1 || '%' OR serial LIKE '%' || $1 || '%' OR creators LIKE '%' || $1 || '%'
 		ORDER BY series_id, item_id, serial;
 	`, query)
 	if err != nil {
@@ -39,7 +39,7 @@ func (d *SqliteBackend) Search(query string) ([]types.GodView, error) {
 
 func (d *SqliteBackend) RecentRedemptions(limit int) ([]types.GodView, error) {
 	rows, err := d.db.Query(`
-		SELECT series_name, series_id, creators, item_id, serial, address, total_value, first_active, redeemed_on, balance
+		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
 		FROM god_view
 		WHERE redeemed_on IS NOT NULL
 		ORDER BY redeemed_on DESC
@@ -59,7 +59,7 @@ func scanGodView(rows *sql.Rows) ([]types.GodView, error) {
 		var gv types.GodView
 		var firstActive *string
 		var redeemedOn *string
-		err := rows.Scan(&gv.SeriesName, &gv.SeriesID, &gv.Creators, &gv.ItemID, &gv.Serial, &gv.Address, &gv.TotalValue, &firstActive, &redeemedOn, &gv.Balance)
+		err := rows.Scan(&gv.SeriesName, &gv.SeriesID, &gv.Creators, &gv.ItemID, &gv.Serial, &gv.Addresses, &gv.TotalValue, &firstActive, &redeemedOn, &gv.Balance)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan god view: %w", err)
 		}
