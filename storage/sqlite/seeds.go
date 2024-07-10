@@ -211,3 +211,50 @@ func (d *SqliteBackend) seedAddresses() error {
 
 	return tx.Commit()
 }
+
+func (d *SqliteBackend) seedFlags() error {
+	csvFile, err := embeddedMigrations.Open("migrations/seeds/flags.csv")
+	if err != nil {
+		return fmt.Errorf("failed to open flags.csv: %w", err)
+	}
+	defer csvFile.Close()
+
+	reader := csv.NewReader(csvFile)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read flags.csv: %w", err)
+	}
+
+	tx, err := d.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
+
+	_, err = tx.Exec(`CREATE TEMPORARY TABLE flags_temp (flag_scope TEXT, flag_type TEXT, flag_key TEXT)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to create temporary table: %w", err)
+	}
+
+	stmt, err := tx.Prepare(`INSERT INTO flags_temp (flag_scope, flag_type, flag_key) VALUES (?, ?, ?)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+
+	for _, record := range records[1:] {
+		_, err := stmt.Exec(record[0], record[1], record[2])
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to insert flag: %w", err)
+		}
+	}
+
+	_, err = tx.Exec(`INSERT INTO flags (flag_scope, flag_type, flag_key) SELECT flag_scope, flag_type, flag_key FROM flags_temp WHERE 1 ON CONFLICT (flag_key, flag_scope, flag_type) DO NOTHING`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to insert flags: %w", err)
+	}
+
+	return tx.Commit()
+}
