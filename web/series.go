@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/RaghavSood/collectibles/notes"
+	"github.com/RaghavSood/collectibles/types"
 	"github.com/RaghavSood/collectibles/util"
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +37,12 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		return
 	}
 
+	flags, err := s.db.GetFlags(types.FLAG_SCOPE_SERIES, series.Slug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	notePointer := notes.NotePointer{
 		NoteType:     notes.Series,
 		PathElements: []string{series.Slug},
@@ -49,5 +56,6 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		"Series":        series,
 		"Notes":         notes,
 		"ItemSummaries": itemSummaries,
+		"Flags":         flags,
 	})
 }

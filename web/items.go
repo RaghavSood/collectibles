@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/RaghavSood/collectibles/types"
 	"github.com/RaghavSood/collectibles/util"
 	"github.com/gin-gonic/gin"
 )
@@ -41,11 +42,28 @@ func (s *Server) item(c *gin.Context) {
 		return
 	}
 
+	flags, err := s.db.GetFlags(types.FLAG_SCOPE_ITEMS, item.SKU)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	seriesFlags, err := s.db.GetFlags(types.FLAG_SCOPE_SERIES, item.SeriesSlug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	if len(seriesFlags) > 0 {
+		flags = append(flags, seriesFlags...)
+	}
+
 	s.renderTemplate(c, "item.tmpl", map[string]interface{}{
 		"Title":        fmt.Sprintf("%s - %s", item.SeriesName, item.SerialString()),
 		"Desc":         fmt.Sprintf("An item in the %s series holding %s BTC (%s USD)", item.SeriesName, item.TotalValue.SatoshisToBTC(true), util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(item.TotalValue)))),
 		"Item":         item,
 		"Transactions": itemTransactions,
 		"Addresses":    addresses,
+		"Flags":        flags,
 	})
 }

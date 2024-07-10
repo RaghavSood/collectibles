@@ -5,6 +5,12 @@
     {{ if eq .FlagType "scam" }}
       <p class="text-sm">This is known to be a scam or exhibit scam-like qualities. Trade, authenticate, and hold with extreme caution.</p>
     {{ end }}
+    {{ if eq .FlagType "compromised" }}
+      <p class="text-sm">The keys associated with this series may be compromised. It is recommended to peel and sweep the coins to a new, secure wallet. Hold assets on these keys at your own risk.</p>
+    {{ end }}
+    {{ if eq .FlagType "stolen" }}
+      <p class="text-sm">This item was reported stolen. Trade with extreme caution.</p>
+    {{ end }}
   {{ end }}
 </div>
 {{ end }}
