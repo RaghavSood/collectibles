@@ -3,6 +3,7 @@ package electrum
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/RaghavSood/collectibles/clogger"
@@ -17,7 +18,7 @@ type Electrum struct {
 }
 
 func NewElectrum() (*Electrum, error) {
-	client, err := electrumx.NewClientTCP(context.Background(), "electrum3.bluewallet.io:50001")
+	client, err := electrumx.NewClientTCP(context.Background(), os.Getenv("ELECTRUM_SERVER"))
 	if err != nil {
 		log.Fatal().
 			Err(err).
