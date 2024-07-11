@@ -167,7 +167,7 @@ func (t *Tracker) processBlockNotificationQueue() {
 				Msg("Sending notification")
 
 			start := "An item"
-			if item.Serial == nil || *item.Serial == "" {
+			if item.Serial != nil && *item.Serial != "" {
 				start = fmt.Sprintf("Item `%s`", tgbot.EscapeText(*item.Serial))
 			}
 
