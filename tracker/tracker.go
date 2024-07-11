@@ -283,6 +283,15 @@ func (t *Tracker) processTransactionQueue() {
 		}
 
 		outpoints, spentTxids, spentVouts, spendingTxids, spendingVins := t.scanTransactions(block.Height, block.Time, []btypes.TransactionDetail{txDetails}, "bitcoin")
+		log.Info().
+			Int("outpoints", len(outpoints)).
+			Int("spent_txids", len(spentTxids)).
+			Int("spent_vouts", len(spentVouts)).
+			Int("spending_txids", len(spendingTxids)).
+			Int("spending_vins", len(spendingVins)).
+			Str("txid", tx.Txid).
+			Msg("Scanned transactions")
+
 		err = t.db.RecordTransactionEffects(outpoints, spentTxids, spentVouts, spendingTxids, spendingVins, block.Height, block.Time)
 		if err != nil {
 			log.Error().Err(err).Str("txid", tx.Txid).Msg("Failed to record transaction effects")
