@@ -171,7 +171,13 @@ func (t *Tracker) processBlockNotificationQueue() {
 				start = fmt.Sprintf("Item `%s`", tgbot.EscapeText(*item.Serial))
 			}
 
-			message := fmt.Sprintf("%s from series `%s` has been redeemed on %s UTC, worth `%s BTC` \\(%s USD\\)\\.\n\nFirst funded on %s UTC, this item held it's value for *%s*\\.\n\n[View details](https://collectible.money/item/%s)",
+			series, err := t.db.SeriesSummary(item.SeriesID)
+			if err != nil {
+				log.Error().Err(err).Str("series", item.SeriesID).Msg("Failed to get series summary")
+				return
+			}
+
+			message := fmt.Sprintf("%s from series `%s` has been redeemed on %s UTC, worth `%s BTC` \\(%s USD\\)\\.\n\nFirst funded on %s UTC, this item held it's value for *%s*\\.\n\nThere are %d unfunded, %d funded, and %d redeemed items in this series now, worth `%s BTC` \\(%s USD\\)\\.\n\n[View details](https://collectible.money/item/%s)",
 				start,
 				tgbot.EscapeText(item.SeriesName),
 				tgbot.EscapeText(util.ShortUTCTime(item.RedeemedOn)),
@@ -179,6 +185,11 @@ func (t *Tracker) processBlockNotificationQueue() {
 				tgbot.EscapeText(util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(item.TotalValue)))),
 				tgbot.EscapeText(util.ShortUTCTime(item.FirstActive)),
 				tgbot.EscapeText(util.LifespanString(item.FirstActive, item.RedeemedOn)),
+				series.Unfunded,
+				series.Unredeemed,
+				series.Redeemed,
+				tgbot.EscapeText(series.TotalValue.SatoshisToBTC(true)),
+				tgbot.EscapeText(util.FormatNumber(fmt.Sprintf("%.2f", util.BTCValueToUSD(series.TotalValue)))),
 				tgbot.EscapeText(item.ItemID),
 			)
 			err = t.telebot.SendMessage(message)
