@@ -1,8 +1,21 @@
 {{ define "masterlist_table" }}
   {{ $list := index . 0 }}
   {{ $showSeriesID := index . 1 }}
+  {{ $enableDatatable := index . 2 }}
+  <script>
+    $(document).ready( function () {
+      $('#results-table').DataTable({
+        lengthMenu: [100, 250, 500, { label: 'All', value: -1 }],
+        layout: {
+          topStart: {
+              buttons: [ 'pageLength', 'copy', 'csv' ]
+          }
+        }
+      });
+    });
+  </script>
   <div class="w-full bg-white p-2 overflow-x-auto">
-    <table class="w-full text-sm">
+    <table id="results-table" class="w-full text-sm">
       <thead>
         <tr>
           <th>Series Name</th>
