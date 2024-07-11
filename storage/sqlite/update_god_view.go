@@ -29,7 +29,7 @@ func (d *SqliteBackend) UpdateGodView() (string, error) {
 										  creators TEXT,
 										  item_id TEXT,
 										  serial TEXT,
-										  address TEXT,
+										  addresses TEXT,
 										  total_value INTEGER,
 										  first_active DATETIME,
 										  redeemed_on DATETIME,
@@ -51,7 +51,7 @@ func (d *SqliteBackend) UpdateGodView() (string, error) {
     CREATE INDEX goddb.god_view_creators ON god_view(creators);
 		CREATE INDEX goddb.god_view_item_id ON god_view(item_id);
 		CREATE INDEX goddb.god_view_serial ON god_view(serial);
-		CREATE INDEX goddb.god_view_address ON god_view(address);
+		CREATE INDEX goddb.god_view_addresses ON god_view(addresses);
 		CREATE INDEX goddb.god_view_total_value ON god_view(total_value);
 		CREATE INDEX goddb.god_view_first_active ON god_view(first_active);
 		CREATE INDEX goddb.god_view_redeemed_on ON god_view(redeemed_on);
