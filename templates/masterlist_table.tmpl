@@ -2,18 +2,20 @@
   {{ $list := index . 0 }}
   {{ $showSeriesID := index . 1 }}
   {{ $enableDatatable := index . 2 }}
-  <script>
-    $(document).ready( function () {
-      $('#results-table').DataTable({
-        lengthMenu: [100, 250, 500, { label: 'All', value: -1 }],
-        layout: {
-          topStart: {
-              buttons: [ 'pageLength', 'copy', 'csv' ]
+  {{ if $enableDatatable }}
+    <script>
+      $(document).ready( function () {
+        $('#results-table').DataTable({
+          lengthMenu: [100, 250, 500, { label: 'All', value: -1 }],
+          layout: {
+            topStart: {
+                buttons: [ 'pageLength', 'copy', 'csv' ]
+            }
           }
-        }
+        });
       });
-    });
-  </script>
+    </script>
+  {{ end }}
   <div class="w-full bg-white p-2 overflow-x-auto">
     <table id="results-table" class="w-full text-sm">
       <thead>
