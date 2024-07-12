@@ -392,12 +392,20 @@ func (t *Tracker) scanTransactions(blockHeight int64, blockTime int, txs []btype
 
 		for _, vout := range tx.Vout {
 			script := vout.ScriptPubKey.Hex
+
 			if t.bf.TestString(script) {
 				exists, err := t.db.ScriptExists(script, chain)
 				if err != nil {
 					log.Error().Err(err).Str("script", script).Msg("Failed to check if script exists")
 					continue
 				}
+
+				log.Info().
+					Str("script", script).
+					Bool("exists", exists).
+					Str("txid", tx.Txid).
+					Int("vout", vout.N).
+					Msg("Checking if script exists")
 
 				if exists {
 					outpoints = append(outpoints, types.Outpoint{
