@@ -22,7 +22,7 @@ type Server struct {
 }
 
 func NewServer(db storage.Storage, noindex bool) *Server {
-	cache := expirable.NewLRU[string, []byte](500, nil, 90*time.Second)
+	cache := expirable.NewLRU[string, []byte](500, nil, 10*time.Minute)
 	return &Server{
 		db:            db,
 		readOnly:      noindex,
