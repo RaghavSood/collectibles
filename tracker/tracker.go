@@ -33,7 +33,7 @@ func NewTracker(db storage.Storage) *Tracker {
 		log.Fatal().Err(err).Msg("Failed to connect to electrum server")
 	}
 
-	telebot, err := tgbot.NewBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHANNEL_USERNAME"))
+	telebot, err := tgbot.NewBot(os.Getenv("TG_BOT_TOKEN"), os.Getenv("TG_CHANNEL_USERNAME"), db)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to connect to telegram bot")
 	}

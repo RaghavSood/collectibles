@@ -68,4 +68,6 @@ type Storage interface {
 	GetFlags(scope string, key string) ([]types.Flag, error)
 
 	SyncComputedTables() error
+
+	InsertMessage(chatID int64, message string) error
 }
