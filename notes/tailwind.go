@@ -9,6 +9,8 @@ var fullMatch = map[string]string{}
 var prefixMatch = map[string]string{
 	"h3": "text-lg font-semibold",
 	"a":  "text-orange-700 hover:underline hover:decoration-dotted hover:text-orange-400",
+	"th": "text-start",
+	"td": "text-start",
 }
 
 func wrapForTailwind(content string) string {
