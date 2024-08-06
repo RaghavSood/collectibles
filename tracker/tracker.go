@@ -220,6 +220,41 @@ func (t *Tracker) processBlockNotificationQueue() {
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to send telegram message")
 			}
+
+			matchingSubs, err := t.db.MatchingTelegramSubscriptions(item.ItemID)
+			if err != nil {
+				log.Error().Err(err).Str("item", item.ItemID).Msg("Failed to get matching subscriptions")
+			} else {
+				sentItemsToChats := make(map[int64]map[string]bool)
+
+				for _, sub := range matchingSubs {
+					if sentItemsToChats[sub.ChatID] != nil && sentItemsToChats[sub.ChatID][item.ItemID] {
+						log.Info().
+							Int64("chat_id", sub.ChatID).
+							Str("scope", sub.Scope).
+							Str("slug", sub.Slug).
+							Msg("Notification already sent to chat")
+						continue
+					}
+
+					log.Info().
+						Int64("chat_id", sub.ChatID).
+						Str("scope", sub.Scope).
+						Str("slug", sub.Slug).
+						Msg("Sending notification")
+					err = t.telebot.SendChatMessage(sub.ChatID, message, false)
+					if err != nil {
+						log.Error().Err(err).Int64("chat_id", sub.ChatID).Msg("Failed to send telegram message")
+						continue
+					}
+
+					if sentItemsToChats[sub.ChatID] == nil {
+						sentItemsToChats[sub.ChatID] = make(map[string]bool)
+					}
+
+					sentItemsToChats[sub.ChatID][item.ItemID] = true
+				}
+			}
 		}
 
 		err = t.db.MarkBlockNotificationProcessed(block.BlockHeight, block.Chain)

@@ -58,7 +58,7 @@ func (t *TgBot) Run() {
 		}
 
 		if !update.Message.IsCommand() {
-			t.SendChatMessage(update.Message.Chat.ID, "I only understand commands. Please use /help to see the list of commands.")
+			t.SendChatMessage(update.Message.Chat.ID, "I only understand commands. Please use /help to see the list of commands.", true)
 			continue
 		}
 
@@ -92,7 +92,7 @@ func (t *TgBot) Run() {
 				msg = fmt.Sprintf("Failed to subscribe: %s", err)
 			}
 
-			msg = "Subscribed successfully! You'll receive updates for this " + urlType + " from now on."
+			msg = "Subscribed successfully! You'll receive updates for this " + urlType + "."
 		case "unsubscribe":
 			payload := update.Message.CommandArguments()
 			if len(payload) == 0 {
@@ -118,7 +118,7 @@ func (t *TgBot) Run() {
 			msg = "I don't know that command. Try /help"
 		}
 
-		err = t.SendChatMessage(update.Message.Chat.ID, msg)
+		err = t.SendChatMessage(update.Message.Chat.ID, msg, true)
 		if err != nil {
 			log.Error().Err(err).Msg("Error sending message")
 			continue
@@ -126,8 +126,12 @@ func (t *TgBot) Run() {
 	}
 }
 
-func (t *TgBot) SendChatMessage(chatID int64, message string) error {
+func (t *TgBot) SendChatMessage(chatID int64, message string, plain bool) error {
 	msg := tgbotapi.NewMessage(chatID, message)
+	if !plain {
+		msg.ParseMode = "MarkdownV2"
+		msg.DisableWebPagePreview = true
+	}
 	err := t.SaveMessage(chatID, msg)
 	if err != nil {
 		fmt.Println("Error saving message:", err)
