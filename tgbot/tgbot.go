@@ -3,6 +3,7 @@ package tgbot
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/RaghavSood/collectibles/clogger"
 	"github.com/RaghavSood/collectibles/storage"
@@ -29,12 +30,15 @@ func NewBot(token string, channelUsername string, db storage.Storage) (*TgBot, e
 		db:              db,
 	}
 
-	go tgBot.Run()
+	if os.Getenv("TG_BOT_DISABLE_CHAT") != "true" {
+		go tgBot.Run()
+	}
 
 	return tgBot, nil
 }
 
 func (t *TgBot) Run() {
+	log.Info().Msg("Starting Telegram bot")
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 30
 
