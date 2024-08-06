@@ -93,6 +93,27 @@ func (t *TgBot) Run() {
 			}
 
 			msg = "Subscribed successfully! You'll receive updates for this " + urlType + " from now on."
+		case "unsubscribe":
+			payload := update.Message.CommandArguments()
+			if len(payload) == 0 {
+				msg = "Please provide a link to the creator, series, or item you'd like to unsubscribe from.\n\nExample: /unsubscribe https://collectible.money/creator/casascius"
+				break
+			}
+
+			// Parse the URL
+			urlType, slug, err := ParseURL(payload)
+			if err != nil {
+				msg = fmt.Sprintf("Failed to parse link: %s", err)
+				break
+			}
+
+			err = t.db.UnsubscribeTelegram(update.Message.Chat.ID, urlType, slug)
+			if err != nil {
+				msg = fmt.Sprintf("Failed to unsubscribe: %s", err)
+				break
+			}
+
+			msg = "Unsubscribed successfully! You'll no longer receive updates for this " + urlType + "."
 		default:
 			msg = "I don't know that command. Try /help"
 		}
