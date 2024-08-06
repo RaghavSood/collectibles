@@ -29,6 +29,12 @@ func (d *SqliteBackend) SyncComputedTables() error {
 		return fmt.Errorf("failed to sync address summary: %w", err)
 	}
 
+	err = d.syncSeriesSummary(tx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to sync series summary: %w", err)
+	}
+
 	return tx.Commit()
 }
 
@@ -75,6 +81,22 @@ func (d *SqliteBackend) syncAddressSummary(tx *sql.Tx) error {
 	_, err = tx.Exec(`INSERT INTO address_summary_c SELECT * FROM address_summary`)
 	if err != nil {
 		return fmt.Errorf("failed to insert into address_summary_c: %w", err)
+	}
+
+	return nil
+}
+
+func (d *SqliteBackend) syncSeriesSummary(tx *sql.Tx) error {
+	// Truncate existing series_summary_c table
+	_, err := tx.Exec(`DELETE FROM series_summary_c`)
+	if err != nil {
+		return fmt.Errorf("failed to truncate series_summary_c: %w", err)
+	}
+
+	// Insert new data into series_summary_c
+	_, err = tx.Exec(`INSERT INTO series_summary_c SELECT * FROM series_summary`)
+	if err != nil {
+		return fmt.Errorf("failed to insert into series_summary_c: %w", err)
 	}
 
 	return nil

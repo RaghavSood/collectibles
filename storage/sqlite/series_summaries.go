@@ -7,7 +7,7 @@ import (
 )
 
 func (d *SqliteBackend) SeriesSummaries() ([]types.SeriesSummary, error) {
-	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary ORDER BY tvl DESC;`
+	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary_c ORDER BY tvl DESC;`
 
 	rows, err := d.db.Query(query)
 	if err != nil {
@@ -27,7 +27,7 @@ func (d *SqliteBackend) SeriesSummariesByCreator(slug string) ([]types.SeriesSum
   ss.redeemed,
   ss.unredeemed
 FROM
-  series_summary ss
+  series_summary_c ss
 JOIN
   series_creators sc ON ss.slug = sc.series_slug
 WHERE
@@ -44,7 +44,7 @@ ORDER BY
 }
 
 func (d *SqliteBackend) SeriesSummary(slug string) (*types.SeriesSummary, error) {
-	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary WHERE slug = ?;`
+	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary_c WHERE slug = ?;`
 
 	row := d.db.QueryRow(query, slug)
 	var summary types.SeriesSummary
