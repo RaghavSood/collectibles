@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/RaghavSood/collectibles/types"
 )
@@ -31,11 +32,26 @@ func scanAddressSummaries(rows *sql.Rows) ([]types.AddressSummary, error) {
 
 	for rows.Next() {
 		var summary types.AddressSummary
-		err := rows.Scan(&summary.Address, &summary.SKU, &summary.SeriesSlug, &summary.Serial, &summary.Unspent, &summary.Spent, &summary.FirstActive, &summary.RedeemedOn, &summary.TotalValue)
+		var firstActive *string
+		var redeemedOn *string
+		err := rows.Scan(&summary.Address, &summary.SKU, &summary.SeriesSlug, &summary.Serial, &summary.Unspent, &summary.Spent, &firstActive, &redeemedOn, &summary.TotalValue)
 		if err != nil {
 			return nil, err
 		}
 
+		if firstActive != nil {
+			summary.FirstActive, err = time.Parse("2006-01-02T15:04:05-07:00", *firstActive)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if redeemedOn != nil {
+			summary.RedeemedOn, err = time.Parse("2006-01-02T15:04:05-07:00", *redeemedOn)
+			if err != nil {
+				return nil, err
+			}
+		}
 		summaries = append(summaries, summary)
 	}
 
