@@ -43,14 +43,14 @@ func scanItemAddressSummary(rows *sql.Rows) ([]types.ItemAddressSummary, error) 
 		}
 
 		if firstActive != nil {
-			ia.FirstActive, err = time.Parse("2006-01-02T15:04:05-07:00", *firstActive)
+			ia.FirstActive, err = parseDbTimeString(firstActive)
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		if redeemedOn != nil {
-			ia.RedeemedOn, err = time.Parse("2006-01-02T15:04:05-07:00", *redeemedOn)
+			ia.RedeemedOn, err = parseDbTimeString(redeemedOn)
 			if err != nil {
 				return nil, err
 			}
