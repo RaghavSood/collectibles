@@ -17,6 +17,12 @@ func (d *SqliteBackend) SyncComputedTables() error {
 		return fmt.Errorf("failed to sync transaction summary: %w", err)
 	}
 
+	err = d.syncItemSummary(tx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to sync item summary: %w", err)
+	}
+
 	return tx.Commit()
 }
 
@@ -31,6 +37,22 @@ func (d *SqliteBackend) syncTransactionSummary(tx *sql.Tx) error {
 	_, err = tx.Exec(`INSERT INTO transaction_summary_c SELECT * FROM transaction_view`)
 	if err != nil {
 		return fmt.Errorf("failed to insert into transaction_summary_c: %w", err)
+	}
+
+	return nil
+}
+
+func (d *SqliteBackend) syncItemSummary(tx *sql.Tx) error {
+	// Truncate existing item_summary_c table
+	_, err := tx.Exec(`DELETE FROM item_summary_c`)
+	if err != nil {
+		return fmt.Errorf("failed to truncate item_summary_c: %w", err)
+	}
+
+	// Insert new data into item_summary_c
+	_, err = tx.Exec(`INSERT INTO item_summary_c SELECT * FROM item_summary`)
+	if err != nil {
+		return fmt.Errorf("failed to insert into item_summary_c: %w", err)
 	}
 
 	return nil

@@ -7,7 +7,7 @@ import (
 )
 
 func (d *SqliteBackend) ItemSummaries() ([]types.ItemSummary, error) {
-	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary;`
+	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary_c;`
 
 	rows, err := d.db.Query(query)
 	if err != nil {
@@ -18,7 +18,7 @@ func (d *SqliteBackend) ItemSummaries() ([]types.ItemSummary, error) {
 }
 
 func (d *SqliteBackend) ItemSummariesBySeries(slug string) ([]types.ItemSummary, error) {
-	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary WHERE series_slug = ?;`
+	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary_c WHERE series_slug = ?;`
 
 	rows, err := d.db.Query(query, slug)
 	if err != nil {
@@ -29,7 +29,7 @@ func (d *SqliteBackend) ItemSummariesBySeries(slug string) ([]types.ItemSummary,
 }
 
 func (d *SqliteBackend) ItemSummary(sku string) (*types.ItemSummary, error) {
-	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary WHERE sku = ?;`
+	query := `SELECT sku, serial, series_name, series_slug, tvl, unspent, spent, total_received, total_spent, unfunded, redeemed, unredeemed FROM item_summary_c WHERE sku = ?;`
 
 	row := d.db.QueryRow(query, sku)
 	var summary types.ItemSummary
