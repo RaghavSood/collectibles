@@ -73,6 +73,26 @@ func (t *TgBot) Run() {
 				"/admin - Talk to the boss\n"
 		case "admin":
 			msg = "Chat with @RaghavSood if you're facing issues with the bot, or would like to submit collectibles or learn about them."
+		case "subscribe":
+			payload := update.Message.CommandArguments()
+			if len(payload) == 0 {
+				msg = "Please provide a link to the creator, series, or item you'd like to subscribe to.\n\nExample: /subscribe https://collectible.money/creator/casascius"
+				break
+			}
+
+			// Parse the URL
+			urlType, slug, err := ParseURL(payload)
+			if err != nil {
+				msg = fmt.Sprintf("Failed to parse link: %s", err)
+				break
+			}
+
+			err = t.db.UpsertTelegramSubscription(update.Message.Chat.ID, urlType, slug)
+			if err != nil {
+				msg = fmt.Sprintf("Failed to subscribe: %s", err)
+			}
+
+			msg = "Subscribed successfully! You'll receive updates for this " + urlType + " from now on."
 		default:
 			msg = "I don't know that command. Try /help"
 		}

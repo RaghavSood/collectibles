@@ -70,4 +70,5 @@ type Storage interface {
 	SyncComputedTables() error
 
 	InsertMessage(chatID int64, message string) error
+	UpsertTelegramSubscription(chatID int64, scope string, slug string) error
 }
