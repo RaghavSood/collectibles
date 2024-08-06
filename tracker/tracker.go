@@ -70,6 +70,11 @@ func (t *Tracker) Run() {
 	dbDumpTicker := time.NewTicker(15 * time.Minute)
 	defer dbDumpTicker.Stop()
 
+	err = t.syncTables()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to sync tables")
+	}
+
 	for {
 		select {
 		case <-dbDumpTicker.C:
@@ -128,6 +133,11 @@ func (t *Tracker) Run() {
 					break
 				}
 
+				err = t.syncTables()
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to sync tables")
+				}
+
 				err = t.db.QueueBlockNotification(i, blockTime, "bitcoin")
 				if err != nil {
 					log.Warn().Err(err).Int64("block_height", i).Msg("Failed to queue block notification")
@@ -137,6 +147,20 @@ func (t *Tracker) Run() {
 			t.processBlockNotificationQueue()
 		}
 	}
+}
+
+func (t *Tracker) syncTables() error {
+	start := time.Now()
+	log.Info().Msg("Syncing computed tables")
+	err := t.db.SyncComputedTables()
+	if err != nil {
+		return fmt.Errorf("failed to sync computed tables: %w", err)
+	}
+	log.Info().
+		Stringer("duration", time.Since(start)).
+		Msg("Computed tables synced")
+
+	return nil
 }
 
 func (t *Tracker) processBlockNotificationQueue() {
