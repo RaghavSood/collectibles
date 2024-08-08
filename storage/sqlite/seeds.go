@@ -230,13 +230,14 @@ func (d *SqliteBackend) seedFlags() error {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
 
-	_, err = tx.Exec(`CREATE TEMPORARY TABLE flags_temp (flag_scope TEXT, flag_type TEXT, flag_key TEXT)`)
+	// Truncate the flags table
+	_, err = tx.Exec(`DELETE FROM flags`)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("failed to create temporary table: %w", err)
+		return fmt.Errorf("failed to truncate flags table: %w", err)
 	}
 
-	stmt, err := tx.Prepare(`INSERT INTO flags_temp (flag_scope, flag_type, flag_key) VALUES (?, ?, ?)`)
+	stmt, err := tx.Prepare(`INSERT INTO flags (flag_scope, flag_type, flag_key) VALUES (?, ?, ?)`)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("failed to prepare statement: %w", err)
@@ -248,12 +249,6 @@ func (d *SqliteBackend) seedFlags() error {
 			tx.Rollback()
 			return fmt.Errorf("failed to insert flag: %w", err)
 		}
-	}
-
-	_, err = tx.Exec(`INSERT INTO flags (flag_scope, flag_type, flag_key) SELECT flag_scope, flag_type, flag_key FROM flags_temp WHERE 1 ON CONFLICT (flag_key, flag_scope, flag_type) DO NOTHING`)
-	if err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to insert flags: %w", err)
 	}
 
 	return tx.Commit()
