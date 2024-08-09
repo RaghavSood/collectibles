@@ -1,6 +1,6 @@
 {{ define "note" }}
 <div class="border bg-white rounded-lg border-orange-700 note-card font-sans grid grid-cols-1 p-4 mb-2 gap-y-3">
   <p>{{ .Data | NoEscape }}</p>
-  <a href="https://github.com/RaghavSood/collectibles/blame/master/notes/{{ .Path }}" target="_BLANK" class="text-xs text-orange-400/70 hover:underline hover:decoration-dotted hover:text-orange-700">View revision history</a>
+  <a href="https://github.com/RaghavSood/collectibles/blame/master/notes/{{ .Path }}" target="_BLANK" class="text-xs text-orange-700/70 hover:underline hover:decoration-dotted hover:text-orange-400">View revision history</a>
 </div>
 {{ end }}

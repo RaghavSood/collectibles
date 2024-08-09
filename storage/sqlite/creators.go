@@ -28,6 +28,16 @@ func (d *SqliteBackend) GetCreator(slug string) (*types.Creator, error) {
 	return &creator, nil
 }
 
+func (d *SqliteBackend) GetCreatorsBySeries(seriesSlug string) ([]types.Creator, error) {
+	rows, err := d.db.Query("SELECT creators.name, creators.created_at, creators.slug FROM creators JOIN series_creators ON creators.slug = series_creators.creator_slug WHERE series_creators.series_slug = ?", seriesSlug)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanCreators(rows)
+}
+
 func scanCreators(rows *sql.Rows) ([]types.Creator, error) {
 	var creators []types.Creator
 	for rows.Next() {

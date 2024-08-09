@@ -17,6 +17,16 @@ func (s *Server) series(c *gin.Context) {
 		return
 	}
 
+	for i := range series {
+		creators, err := s.db.GetCreatorsBySeries(series[i].Slug)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		series[i].Creators = creators
+	}
+
 	s.renderTemplate(c, "series.tmpl", map[string]interface{}{
 		"Title":  "Series",
 		"Series": series,
@@ -30,6 +40,14 @@ func (s *Server) seriesDetail(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+
+	creators, err := s.db.GetCreatorsBySeries(slug)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	series.Creators = creators
 
 	itemSummaries, err := s.db.ItemAddressSummariesBySeries(slug)
 	if err != nil {

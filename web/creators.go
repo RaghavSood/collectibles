@@ -38,6 +38,16 @@ func (s *Server) creator(c *gin.Context) {
 		return
 	}
 
+	for i := range series {
+		creators, err := s.db.GetCreatorsBySeries(series[i].Slug)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		series[i].Creators = creators
+	}
+
 	flags, err := s.db.GetFlags(types.FLAG_SCOPE_CREATORS, creator.Slug)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
