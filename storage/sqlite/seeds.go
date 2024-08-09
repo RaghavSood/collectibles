@@ -253,3 +253,45 @@ func (d *SqliteBackend) seedFlags() error {
 
 	return tx.Commit()
 }
+
+func (d *SqliteBackend) seedGradingSlabs() error {
+	csvFile, err := embeddedMigrations.Open("migrations/seeds/grading_slabs.csv")
+	if err != nil {
+		return fmt.Errorf("failed to read grading_slabs.csv: %w", err)
+	}
+	defer csvFile.Close()
+
+	reader := csv.NewReader(csvFile)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read grading_slabs.csv: %w", err)
+	}
+
+	tx, err := d.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to start transaction: %w", err)
+	}
+
+	// Truncate the grading_slabs table
+	_, err = tx.Exec(`DELETE FROM grading_slabs`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to truncate grading_slabs table: %w", err)
+	}
+
+	stmt, err := tx.Prepare(`INSERT INTO grading_slabs (sku, service, identifier, grade, view_link) VALUES (?, ?, ?, ?, ?)`)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to prepare statement: %w", err)
+	}
+
+	for _, record := range records[1:] {
+		_, err := stmt.Exec(record[0], record[1], record[2], record[3], record[4])
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to insert grading slab: %w", err)
+		}
+	}
+
+	return tx.Commit()
+}

@@ -86,6 +86,11 @@ func NewSqliteBackend(readonly bool) (*SqliteBackend, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to seed flags: %w", err)
 		}
+
+		err = backend.seedGradingSlabs()
+		if err != nil {
+			return nil, fmt.Errorf("failed to seed grading slabs: %w", err)
+		}
 	}
 
 	return backend, nil
