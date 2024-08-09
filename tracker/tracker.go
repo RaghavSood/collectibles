@@ -117,11 +117,6 @@ func (t *Tracker) Run() {
 			t.processScriptQueue()
 			t.processTransactionQueue()
 
-			err = t.syncTables()
-			if err != nil {
-				log.Error().Err(err).Msg("Failed to sync tables")
-			}
-
 			lastBlock, err := t.db.KvGetBlockHeight()
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to get last block height")
