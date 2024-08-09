@@ -38,6 +38,7 @@ func (s *Server) Serve() {
 
 	router.GET("/", s.index)
 	router.GET("/about", s.about)
+	router.GET("/grading", s.grading)
 
 	router.GET("/creators", s.creators)
 	router.GET("/creator/:slug", s.creator)
@@ -122,6 +123,12 @@ func (s *Server) index(c *gin.Context) {
 func (s *Server) about(c *gin.Context) {
 	s.renderTemplate(c, "about.tmpl", map[string]interface{}{
 		"Title": "About",
+	})
+}
+
+func (s *Server) grading(c *gin.Context) {
+	s.renderTemplate(c, "grading.tmpl", map[string]interface{}{
+		"Title": "Grading",
 	})
 }
 
