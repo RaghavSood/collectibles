@@ -48,6 +48,12 @@ func (s *Server) item(c *gin.Context) {
 		return
 	}
 
+	slabs, err := s.db.GetGradingSlabsByItem(sku)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	seriesFlags, err := s.db.GetFlags(types.FLAG_SCOPE_SERIES, item.SeriesSlug)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -64,6 +70,7 @@ func (s *Server) item(c *gin.Context) {
 		"Item":         item,
 		"Transactions": itemTransactions,
 		"Addresses":    addresses,
+		"GradingSlabs": slabs,
 		"Flags":        flags,
 	})
 }

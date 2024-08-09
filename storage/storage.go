@@ -74,4 +74,6 @@ type Storage interface {
 	UpsertTelegramSubscription(chatID int64, scope string, slug string) error
 	UnsubscribeTelegram(chatID int64, scope string, slug string) error
 	MatchingTelegramSubscriptions(sku string) ([]types.TelegramSubscription, error)
+
+	GetGradingSlabsByItem(sku string) ([]types.GradingSlab, error)
 }
