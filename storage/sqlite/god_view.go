@@ -24,9 +24,12 @@ func (d *SqliteBackend) GodView() ([]types.GodView, error) {
 
 func (d *SqliteBackend) Search(query string) ([]types.GodView, error) {
 	rows, err := d.db.Query(`
+    WITH slab_matches AS (
+		  SELECT sku FROM grading_slabs WHERE identifier LIKE '%' || $1 || '%'
+		)
 		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
 		FROM god_view
-		WHERE series_name LIKE '%' || $1 || '%' OR addresses LIKE '%' || $1 || '%' OR serial LIKE '%' || $1 || '%' OR creators LIKE '%' || $1 || '%'
+		WHERE series_name LIKE '%' || $1 || '%' OR addresses LIKE '%' || $1 || '%' OR serial LIKE '%' || $1 || '%' OR creators LIKE '%' || $1 || '%' OR item_id IN slab_matches
 		ORDER BY series_id, item_id, serial;
 	`, query)
 	if err != nil {
