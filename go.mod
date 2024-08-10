@@ -21,6 +21,7 @@ require (
 	github.com/pressly/goose/v3 v3.21.1
 	github.com/rs/zerolog v1.33.0
 	github.com/snabb/sitemap v1.0.4
+	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 )
 
 require (
