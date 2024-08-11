@@ -11,7 +11,6 @@ import (
 	"github.com/RaghavSood/collectibles/electrum"
 	ctypes "github.com/RaghavSood/collectibles/types"
 	"github.com/rs/zerolog"
-	"golang.org/x/exp/maps"
 )
 
 const (
@@ -19,15 +18,15 @@ const (
 	FIVE      = 500000000
 	TEN       = 1000000000
 	TWENTY    = 2000000000
-	MAX_DEPTH = 7 // Maximum depth for recursive scanning
+	MAX_DEPTH = 20 // Maximum depth for recursive scanning
 )
 
 var addressList = []string{"1FhTe1bMtoKHDbNw13v3BQ9sb2kFTagaRH"}
 
-var addressGraph = make(map[string]map[string]map[string]struct{})
+var addressGraph = make(map[string]map[string]map[string]int64) // Track BTC amounts
 var visitedAddresses = make(map[string]struct{})
-
-var selectedAddresses = make(map[string]bool)
+var visitedTransactions = make(map[string]struct{})
+var selectedAddresses = make(map[string]string)
 
 func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -75,16 +74,29 @@ func main() {
 				continue // Skip this transaction and continue with the next
 			}
 
+			if _, visited := visitedTransactions[txid]; visited {
+				markableTxid := txid + "*"
+				if addressGraph[addr] == nil {
+					addressGraph[addr] = make(map[string]map[string]int64)
+				}
+				addressGraph[addr][markableTxid] = make(map[string]int64)
+
+				continue
+			}
+
+			visitedTransactions[txid] = struct{}{}
 			outputs := categorizeOutputs(tx.Vout, addr)
 
 			// Print categorized addresses for the root address
 			printCategorizedOutputs(addr, txid, outputs)
 
+			trackAddresses(addr, txid, outputs)
+
 			// If there are categorized outputs, find the change output
 			if len(outputs) > 0 {
-				changeAddress := findChangeOutput(tx.Vout, outputs)
-				if changeAddress != "" {
-					trackAddress(addr, txid, changeAddress)
+				changeAddresses := findChangeOutputs(tx.Vout, outputs)
+				for _, changeAddress := range changeAddresses {
+					trackAddress(addr, txid, changeAddress, outputs) // Track the amount
 					fmt.Printf("Change output found: %s -> %s (Transaction ID: %s)\n", addr, changeAddress, txid)
 					// Recursively scan the change address
 					scanChangeAddress(changeAddress, bclient, eclient, 1) // Start at depth 1
@@ -93,21 +105,13 @@ func main() {
 		}
 	}
 
-	addressesFound := maps.Keys(selectedAddresses)
-	for _, addr := range addressesFound {
-		fmt.Println(addr)
+	fmt.Println("Addresses discovered:")
+	for addr, value := range selectedAddresses {
+		fmt.Printf("  %s: %s BTC\n", addr, value)
 	}
 
 	fmt.Println("Address graph:")
-	for inputAddr, txs := range addressGraph {
-		fmt.Printf("  %s:\n", inputAddr)
-		for txid, outputs := range txs {
-			fmt.Printf("    %s:\n", txid)
-			for outputAddr := range outputs {
-				fmt.Printf("      %s\n", outputAddr)
-			}
-		}
-	}
+	printAddressGraph(addressList[0], "", 0) // Print the graph starting from the original address
 }
 
 func checkInputs(vins []types.Vin, addr string) bool {
@@ -129,32 +133,52 @@ func categorizeOutputs(vouts []types.Vout, addr string) map[int64][]string {
 		value := ctypes.FromBTCString(ctypes.BTCString(vout.Value)).Int64()
 		categories[value] = append(categories[value], vout.ScriptPubKey.Address)
 
+		// Mark all output addresses as discovered
 		if value == ONE || value == FIVE || value == TEN || value == TWENTY {
-			selectedAddresses[vout.ScriptPubKey.Address] = true
+			selectedAddresses[vout.ScriptPubKey.Address] = vout.Value.String()
 		}
 	}
 	return categories
 }
 
-func findChangeOutput(vouts []types.Vout, categorized map[int64][]string) string {
+func findChangeOutputs(vouts []types.Vout, categorized map[int64][]string) []string {
+	var changeAddresses []string
 	for _, vout := range vouts {
 		value := ctypes.FromBTCString(ctypes.BTCString(vout.Value)).Int64()
 		// If the output value is not in the categorized values, it is the change output
 		if value != ONE && value != FIVE && value != TEN && value != TWENTY {
-			return vout.ScriptPubKey.Address
+			changeAddresses = append(changeAddresses, vout.ScriptPubKey.Address)
 		}
 	}
-	return ""
+
+	return changeAddresses
 }
 
-func trackAddress(inputAddr, txid, outputAddr string) {
+func trackAddresses(inputAddr, txid string, outputs map[int64][]string) {
+	for _, addrs := range outputs {
+		for _, addr := range addrs {
+			trackAddress(inputAddr, txid, addr, outputs)
+		}
+	}
+}
+
+func trackAddress(inputAddr, txid, outputAddr string, outputs map[int64][]string) {
 	if addressGraph[inputAddr] == nil {
-		addressGraph[inputAddr] = make(map[string]map[string]struct{})
+		addressGraph[inputAddr] = make(map[string]map[string]int64)
 	}
 	if addressGraph[inputAddr][txid] == nil {
-		addressGraph[inputAddr][txid] = make(map[string]struct{})
+		addressGraph[inputAddr][txid] = make(map[string]int64)
 	}
-	addressGraph[inputAddr][txid][outputAddr] = struct{}{}
+	for value, addrs := range outputs {
+		for _, addr := range addrs {
+			if addr == outputAddr {
+				addressGraph[inputAddr][txid][outputAddr] = value
+				if value == ONE || value == FIVE || value == TEN || value == TWENTY {
+					selectedAddresses[outputAddr] = fmt.Sprintf("%.8f", float64(value)/1e8)
+				}
+			}
+		}
+	}
 }
 
 func scanChangeAddress(addr string, bclient *bitcoinrpc.RpcClient, eclient *electrum.Electrum, depth int) {
@@ -201,15 +225,27 @@ func scanChangeAddress(addr string, bclient *bitcoinrpc.RpcClient, eclient *elec
 			continue // Skip this transaction and continue with the next
 		}
 
+		if _, visited := visitedTransactions[txid]; visited {
+			markableTxid := txid + "*"
+			if addressGraph[addr] == nil {
+				addressGraph[addr] = make(map[string]map[string]int64)
+			}
+			addressGraph[addr][markableTxid] = make(map[string]int64)
+
+			continue
+		}
+
+		visitedTransactions[txid] = struct{}{}
 		outputs := categorizeOutputs(tx.Vout, addr)
 
 		// Print categorized addresses for the change address
 		printCategorizedOutputs(addr, txid, outputs)
 
+		trackAddresses(addr, txid, outputs)
+
 		if len(outputs) > 0 {
-			changeAddress := findChangeOutput(tx.Vout, outputs)
-			if changeAddress != "" {
-				trackAddress(addr, txid, changeAddress)
+			changeAddresses := findChangeOutputs(tx.Vout, outputs)
+			for _, changeAddress := range changeAddresses {
 				fmt.Printf("Change output found: %s -> %s (Transaction ID: %s)\n", addr, changeAddress, txid)
 				// Recursively scan the change address, increasing the depth
 				scanChangeAddress(changeAddress, bclient, eclient, depth+1)
@@ -222,5 +258,19 @@ func printCategorizedOutputs(addr string, txid string, categorized map[int64][]s
 	fmt.Printf("Categorized outputs for address %s (Transaction ID: %s):\n", addr, txid)
 	for value, addrs := range categorized {
 		fmt.Printf("  Value: %.8f BTC, Addresses: %s\n", float64(value)/1e8, strings.Join(addrs, ", "))
+	}
+}
+
+// Print the address graph in a well-indented tree structure
+func printAddressGraph(addr string, prefix string, depth int) {
+	if txs, exists := addressGraph[addr]; exists {
+		fmt.Printf("%s%s\n", prefix, addr)
+		for txid, outputs := range txs {
+			fmt.Printf("%s  └── %s\n", prefix, txid)
+			for outputAddr, amount := range outputs {
+				fmt.Printf("%s    └── %s: %.8f BTC\n", prefix, outputAddr, float64(amount)/1e8)
+				printAddressGraph(outputAddr, prefix+"    ", depth+1) // Recursively print child addresses
+			}
+		}
 	}
 }
