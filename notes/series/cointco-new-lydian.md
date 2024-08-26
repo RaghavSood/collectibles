@@ -8,4 +8,4 @@ Instead, the 0.0002 BTC loaded on each "coin" is actually loaded into the accomp
 
 The stated mintage of the coins is 500, but only 103 have been funded from the Coint Co address. It is unknown how many were minted in total.
 
-Two variants purpotedlly exist - a full silver one, and one with gold plating. It is unknown whether the stated mintage of 500 is for each variant, or the total mintage of both variants combined.
+Two variants purpotedly exist - a full silver one, and one with gold plating. It is unknown whether the stated mintage of 500 is for each variant, or the total mintage of both variants combined.
