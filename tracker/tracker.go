@@ -201,7 +201,7 @@ func (t *Tracker) processBlockNotificationQueue() {
 				return
 			}
 
-			message := fmt.Sprintf("%s from series `%s` has been redeemed on %s UTC, worth `%s BTC` \\(%s USD\\)\\.\n\nFirst funded on %s UTC, this item held it's value for *%s*\\.\n\nThere are %d unfunded, %d funded, and %d redeemed items in this series now, worth `%s BTC` \\(%s USD\\)\\.\n\n[View details](https://collectible.money/item/%s)",
+			message := fmt.Sprintf("%s from series `%s` has been redeemed on %s UTC, worth `%s BTC` \\(%s USD\\)\\.\n\nFirst funded on %s UTC, this item held its value for *%s*\\.\n\nThere are %d unfunded, %d funded, and %d redeemed items in this series now, worth `%s BTC` \\(%s USD\\)\\.\n\n[View details](https://collectible.money/item/%s)",
 				start,
 				tgbot.EscapeText(item.SeriesName),
 				tgbot.EscapeText(util.ShortUTCTime(item.RedeemedOn)),
