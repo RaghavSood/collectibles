@@ -1,0 +1,55 @@
+{{ define "content" }}
+  <div class="lg:container mx-auto p-4">
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
+      <h2 class="text-xl font-semibold">Scam Creators</h2>
+    </div>
+    <div class="text-pretty border rounded-lg border-red-900 bg-red-800 p-4 mb-4 text-white">
+      <h2 class="text-lg font-semibold">Alert!</h2>
+      <p class="text-sm">These creators are known to intentionally sell items that are misrepresented or designed to steal funds. They may include false keys, compromised keys, false materials, or other suspicious behaviour.</p>
+    </div>
+    {{ range .ScamCreators }}
+      <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
+        <a href="/creator/{{ .Slug }}" class="hover:underline hover:text-orange-400 hover:decoration-dotted">
+          <h2 class="text-xl font-semibold">{{ .Name }}</h2>
+        </a>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .SeriesCount }}</p>
+            <h3 class="text-xs mb-4">Series</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .ItemCount }}</p>
+            <h3 class="text-xs mb-4">Items</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">{{ .TotalValue.SatoshisToBTC true }} BTC</p>
+            <h3 class="text-xs mb-4">TVL BTC</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-2xl font-medium">${{ FormatNumber (printf "%.2f" (BTCValueToUSD .TotalValue)) }}</p>
+            <h3 class="text-xs mb-4">TVL USD</h3>
+          </div>
+        </div>
+      </div>
+    {{ end }}
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
+      <h2 class="text-xl font-semibold">Compromised Series</h2>
+    </div>
+    <div class="text-pretty border rounded-lg border-red-900 bg-red-800 p-4 mb-4 text-white">
+      <h2 class="text-lg font-semibold">Alert!</h2>
+      <p class="text-sm">Items in these series are known to have compromised keys. Funds held on these keys may be stolen at any moment. It is strongly recommend that any items here are peeled and redeemed immediately by transferring the BTC to a new, secure address. Hold funds on these keys with extremen caution at your own risk.</p>
+    </div>
+    {{ range .CompromisedSeries }}
+      {{ template "series_card" . }}
+    {{ end }}
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
+      <h2 class="text-xl font-semibold">Lost/Stolen Items</h2>
+    </div>
+    <div class="text-pretty border rounded-lg border-red-900 bg-red-800 p-4 mb-4 text-white">
+      <h2 class="text-lg font-semibold">Alert!</h2>
+      <p class="text-sm">These items have been reported as lost or stolen by the creator or the last known owner. Trade and hold these items with extreme caution. If you believe you have found an item on this list, please contact <a class="hover:underline hover:text-orange-400 hover:decoration-dotted" target="_BLANK" href="mailto:hello@collectible.money">us</a>.</p>
+    </div>
+    {{ template "masterlist_table" (MultiParam .StolenItems false true) }}
+  </div>
+{{ end }}
+

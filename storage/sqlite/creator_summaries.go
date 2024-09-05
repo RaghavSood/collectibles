@@ -17,6 +17,17 @@ func (d *SqliteBackend) CreatorSummaries() ([]types.CreatorSummary, error) {
 	return scanCreatorSummaries(rows)
 }
 
+func (d *SqliteBackend) ScamCreatorSummaries() ([]types.CreatorSummary, error) {
+	query := `SELECT name, slug, series_count, item_count, tvl, unfunded, redeemed, unredeemed FROM creator_summary WHERE slug IN (SELECT flag_key FROM flags WHERE flag_scope = 'creators' AND flag_type = 'scam') ORDER BY tvl desc;`
+
+	rows, err := d.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	return scanCreatorSummaries(rows)
+}
+
 func (d *SqliteBackend) CreatorSummary(creatorSlug string) (*types.CreatorSummary, error) {
 	query := `SELECT name, slug, series_count, item_count, tvl, unfunded, redeemed, unredeemed FROM creator_summary WHERE slug = ?;`
 

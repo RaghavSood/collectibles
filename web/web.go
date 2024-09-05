@@ -57,6 +57,8 @@ func (s *Server) Serve() {
 
 	router.GET("/search", s.search)
 
+	router.GET("/flagged", s.flagged)
+
 	router.GET("/snapshot/*path", s.snapshot)
 	embeds := router.Group("/embed")
 	{

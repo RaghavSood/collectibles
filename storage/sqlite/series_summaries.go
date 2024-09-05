@@ -17,6 +17,18 @@ func (d *SqliteBackend) SeriesSummaries() ([]types.SeriesSummary, error) {
 	return scanSeriesSummaries(rows)
 }
 
+func (d *SqliteBackend) CompromisedSeriesSummaries() ([]types.SeriesSummary, error) {
+	query := `SELECT slug, name, item_count, tvl, unfunded, redeemed, unredeemed FROM series_summary_c WHERE slug IN (SELECT flag_key FROM flags WHERE flag_scope = 'series' AND flag_type = 'compromised') ORDER BY tvl DESC;`
+
+	rows, err := d.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return scanSeriesSummaries(rows)
+}
+
 func (d *SqliteBackend) SeriesSummariesByCreator(slug string) ([]types.SeriesSummary, error) {
 	query := `SELECT
   ss.slug,

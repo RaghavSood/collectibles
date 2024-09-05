@@ -56,6 +56,21 @@ func (d *SqliteBackend) RecentRedemptions(limit int) ([]types.GodView, error) {
 	return scanGodView(rows)
 }
 
+func (d *SqliteBackend) StolenLostItems() ([]types.GodView, error) {
+	rows, err := d.db.Query(`
+		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance
+		FROM god_view
+		WHERE item_id IN (SELECT flag_key FROM flags WHERE flag_scope = 'items' AND flag_type = 'stolen')
+		ORDER BY series_id, item_id, serial;
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query god view: %w", err)
+	}
+	defer rows.Close()
+
+	return scanGodView(rows)
+}
+
 func (d *SqliteBackend) RedemptionsByRedeemedOn(redeemedOn time.Time) ([]types.GodView, error) {
 	rows, err := d.db.Query(`
 		SELECT series_name, series_id, creators, item_id, serial, addresses, total_value, first_active, redeemed_on, balance

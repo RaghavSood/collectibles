@@ -34,10 +34,12 @@ type Storage interface {
 
 	CreatorSummaries() ([]types.CreatorSummary, error)
 	CreatorSummary(creatorSlug string) (*types.CreatorSummary, error)
+	ScamCreatorSummaries() ([]types.CreatorSummary, error)
 
 	SeriesSummaries() ([]types.SeriesSummary, error)
 	SeriesSummariesByCreator(creatorSlug string) ([]types.SeriesSummary, error)
 	SeriesSummary(seriesSlug string) (*types.SeriesSummary, error)
+	CompromisedSeriesSummaries() ([]types.SeriesSummary, error)
 
 	ItemSummaries() ([]types.ItemSummary, error)
 	ItemSummariesBySeries(seriesSlug string) ([]types.ItemSummary, error)
@@ -61,6 +63,7 @@ type Storage interface {
 	Search(query string) ([]types.GodView, error)
 	RecentRedemptions(limit int) ([]types.GodView, error)
 	RedemptionsByRedeemedOn(redeemedOn time.Time) ([]types.GodView, error)
+	StolenLostItems() ([]types.GodView, error)
 	UpdateGodView() (string, error)
 
 	KvGetBlockHeight() (int64, error)
