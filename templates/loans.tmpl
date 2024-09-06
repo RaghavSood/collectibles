@@ -1,0 +1,136 @@
+{{ define "content" }}
+  <script>
+    var days = 365;
+    var interestMap = {
+      28: 0.1,
+      56: 0.095,
+      84: 0.08,
+      112: 0.075
+    };
+    var minimumDailyInterest = 5000;
+    var paymentPeriod = 14; // Accumulated interest is paid every 14 days
+    var ltv = 0.9;
+    var price = {{ .Price }};
+
+    function calculateDailyInterest(principal, duration) {
+      var rate = interestMap[duration] / days;
+      return Math.max(Math.floor(principal * rate), minimumDailyInterest);
+    }
+
+    function calculateOutstandingOnDay(principal, startDate, endDate, duration) {
+      var rate = interestMap[duration] / days;
+      var start = new Date(startDate);
+      var end = new Date(endDate);
+      var elapsedDays = (end - start) / (1000 * 60 * 60 * 24);
+      var accumulatingDays = (elapsedDays % paymentPeriod) + 1;
+      console.log("Rate", rate, "Days", days, "Accumulating Days", accumulatingDays);
+      var dailyInterest = calculateDailyInterest(principal, duration);
+      return principal + (dailyInterest * accumulatingDays);
+    }
+
+    function inputBTCToSatoshis(input) {
+      return Math.round(parseFloat(input) * 1e8);
+    }
+
+    function formSubmit() {
+      var principal = inputBTCToSatoshis(document.getElementById('principal').value);
+      var duration = parseInt(document.getElementById('duration').value);
+      var start = document.getElementById('start').value;
+      var table = document.querySelector('table tbody');
+      table.innerHTML = '';
+      var tips = document.getElementById('tips');
+      if (isNaN(principal) || isNaN(duration) || start === '') {
+        return;
+      }
+      var startDate = new Date(start);
+      var endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + duration);
+
+      var dailyInterest = calculateDailyInterest(principal, duration);
+      var totalInterest = dailyInterest * (endDate - startDate) / (1000 * 60 * 60 * 24);
+
+      var principalBTC = (principal/1e8).toFixed(8);
+      var totalInterestBTC = (totalInterest/1e8).toFixed(8);
+      var principalUSD = (principalBTC * price).toFixed(2);
+      var totalInterestUSD = (totalInterestBTC * price).toFixed(2);
+      var miniumumCollateral = ((principal/ltv)/1e8).toFixed(8);
+      tips.innerHTML = 'A loan of ' + principalBTC + ' BTC (~$' + principalUSD + ') will accumulate ' + totalInterestBTC + ' BTC (~$' + totalInterestUSD + ') in interest over ' + duration + ' days. Your item must be loaded with at least ' + miniumumCollateral + ' BTC to be eligible.';
+      for(var i=0; i<duration; i++) {
+        var date = new Date(startDate);
+        date.setDate(date.getDate() + i);
+        var outstanding = calculateOutstandingOnDay(principal, startDate, date, duration);
+        var row = document.createElement('tr');
+        var paymentDue = '-';
+        if ((i+1) == duration) {
+          paymentDue = (outstanding/1e8).toFixed(8) + ' BTC';
+        } else if ((i+1) % paymentPeriod == 0) {
+          paymentDue = ((outstanding-principal)/1e8).toFixed(8) + ' BTC';
+        }
+        row.innerHTML = '<td class="px-4 py-2 border-b border-orange-700">' + (i+1) + '</td>' +
+                        '<td class="px-4 py-2 border-b border-orange-700">' + date.toISOString().split('T')[0] + '</td>' +
+                        '<td class="px-4 py-2 border-b border-orange-700">' + (dailyInterest/1e8).toFixed(8) + ' BTC</td>' +
+                        '<td class="px-4 py-2 border-b border-orange-700">' + (outstanding/1e8).toFixed(8) + ' BTC</td>' +
+                        '<td class="px-4 py-2 border-b border-orange-700">' + paymentDue + '</td>';
+        table.appendChild(row);
+      }
+
+      window.history.replaceState(null, null, '?principal=' + (principal/1e8).toFixed(8) + '&duration=' + duration + '&start=' + start);
+    }
+
+    $(document).ready(function() {
+      (new URL(window.location.href)).searchParams.forEach((value, key) => {
+        document.getElementById(key).value = value;
+      });
+
+      formSubmit();
+    });
+  </script>
+  <div class="lg:container mx-auto p-4">
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4">
+      <h2 class="text-xl font-semibold">Loans</h2>
+    </div>
+    <div class="border bg-white rounded-lg border-orange-700 note-card font-sans grid grid-cols-1 p-4 mb-2 gap-y-3">
+      <p>An overview of active or potential loans taken against Bitcoin collectibles. Exclusively available to members of the BitcoinTalk Collectibles forum.</p>
+    </div>
+    <div class="border bg-white rounded-lg border-orange-700 note-card font-sans grid grid-cols-1 p-4 mb-2 gap-y-3">
+      <h2 class="text-xl font-semibold mb-2">Calculator</h2>
+      <form id="loanForm">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <input type="number" id="principal" name="principal" placeholder="Principal (BTC)" class="border border-orange-700 rounded-lg p-2 w-full mb-2">
+        <select id="duration" name="duration" class="border border-orange-700 rounded-lg p-2 w-full mb-2">
+          <option value="-1">Select duration</option>
+          <option value="28">28 days @ 10% pa</option>
+          <option value="56">56 days @ 9.5% pa</option>
+          <option value="84">84 days @ 8% pa</option>
+          <option value="112">112 days @ 7.5% pa</option>
+        </select>
+        <input type="date" id="start" name="start" class="border border-orange-700 rounded-lg p-2 w-full mb-2" max="2024-12-03" min="2024-09-01">
+        </div>
+        <button type="button" onclick="formSubmit()" class="border border-orange-700 rounded-lg p-2 w-full mb-2 bg-orange-700 text-white">Calculate</button>
+      </form>
+    </div>
+    <div class="border bg-white rounded-lg border-orange-700 note-card font-sans grid grid-cols-1 p-4 mb-2 gap-y-3">
+      <p id="tips">Use the calculator to key in the amount of BTC you wish to borrow, and the duration of the loan. The calculator will provide a breakdown of the daily interest and outstanding amount for the duration of the loan.</p>
+    </div>
+    <div class="text-pretty border rounded-lg border-orange-700 bg-white p-4 mb-4 w-full overflow-x-scroll">
+      <h2 class="text-xl font-semibold mb-2">Payment Schedule</h2>
+      <p>All dates are UTC.</p>
+      <table class="min-w-full border border-orange-700">
+        <thead>
+          <tr>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Day</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Date</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Interest</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Outstanding</th>
+            <th class="text-start px-4 py-2 border-b border-orange-700">Payment Due</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+            <tr class="whitespace-nowrap">
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{{ end }}
+
